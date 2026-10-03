@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneos | eSports Arena Manager</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>eSports Arena Manager</h1>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="torneos.html">Torneos</a></li>
+                <li><a href="detalle-torneo.html">Detalle de torneo</a></li>
+                <li><a href="inscripcion.html">Inscripción</a></li>
+                <li><a href="equipo.html">Equipo</a></li>
+                <li><a href="perfil.html">Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+
+        <section id="catalogo-torneos">
+            <h2>Listado de torneos</h2>
+            <p>Busca y filtra los torneos disponibles.</p>
+            <form id="form-filtros">
+
+                <label for="buscar">Buscar por nombre:</label>
+                <input type="text" id="buscar" name="buscar" placeholder="Ej: Arena Masters">
+
+                <label for="juego">Juego:</label>
+                <select id="juego" name="juego">
+                    <option value="">Todos</option>
+                    <option value="Valorant">Valorant</option>
+                    <option value="League of Legends">League of Legends</option>
+                    <option value="Rocket League">Rocket League</option>
+                </select>
+
+                <label for="estado">Estado:</label>
+                <select id="estado" name="estado">
+                    <option value="">Todos</option>
+                    <option value="Abierto">Abierto</option>
+                    <option value="En curso">En curso</option>
+                    <option value="Finalizado">Finalizado</option>
+                </select>
+
+                <label for="fecha-inicio">Desde:</label>
+                <input type="date" id="fecha-inicio" name="fecha-inicio">
+
+                <label for="fecha-fin">Hasta:</label>
+                <input type="date" id="fecha-fin" name="fecha-fin">
+
+                <button type="submit">Filtrar</button>
+
+            </form>
+
+            <p id="mensaje-filtro" class="mensaje-error"></p>
+
+            <div id="lista-torneos-completa">
+                
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 eSports Arena Manager. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/datos.js"></script>
+    <script src="js/torneos.js"></script>
+
+</body>
+
+</html>

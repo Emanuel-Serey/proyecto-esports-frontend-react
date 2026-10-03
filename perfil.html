@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Perfil | eSports Arena Manager</title>
+
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>eSports Arena Manager</h1>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="torneos.html">Torneos</a></li>
+                <li><a href="detalle-torneo.html">Detalle de torneo</a></li>
+                <li><a href="inscripcion.html">Inscripción</a></li>
+                <li><a href="equipo.html">Equipo</a></li>
+                <li><a href="perfil.html">Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <main>
+
+        <section id="perfil-jugador">
+
+            <h2>Perfil del jugador</h2>
+
+            <div id="datos-jugador">
+                
+            </div>
+
+            <form id="form-apodo">
+
+                <div class="campo-formulario">
+
+                    <label for="nuevo-apodo">Cambiar apodo:</label>
+
+                    <input type="text" id="nuevo-apodo" name="nuevo-apodo" placeholder="Ej: Pepito123"
+                        autocomplete="off">
+                    <button type="submit" class="boton-primario">
+                        Guardar
+                    </button>
+
+                </div>
+
+                <p id="mensaje-apodo" class="mensaje-error"></p>
+
+            </form>
+
+        </section>
+
+
+        <section id="equipos-jugador">
+
+            <h2>Mis equipos</h2>
+
+            <div id="lista-equipos-jugador">
+                
+            </div>
+
+        </section>
+
+
+        <section id="historial-jugador">
+
+            <h2>Historial de torneos</h2>
+
+            <div id="lista-historial">
+                
+            </div>
+
+        </section>
+
+
+        <section id="estadisticas-jugador">
+
+            <h2>Estadísticas</h2>
+
+            <div id="datos-estadisticas">
+                
+            </div>
+
+        </section>
+
+
+        <section id="sanciones-jugador">
+
+            <h2>Sanciones</h2>
+
+            <div id="lista-sanciones">
+                
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>
+            &copy; 2026 eSports Arena Manager.
+            Todos los derechos reservados.
+        </p>
+    </footer>
+
+
+    <script src="js/datos.js"></script>
+    <script src="js/perfil.js"></script>
+
+</body>
+
+</html>

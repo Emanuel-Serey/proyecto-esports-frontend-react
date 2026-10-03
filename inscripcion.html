@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inscripción | eSports Arena Manager</title>
+
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>eSports Arena Manager</h1>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="torneos.html">Torneos</a></li>
+                <li><a href="detalle-torneo.html">Detalle de torneo</a></li>
+                <li><a href="inscripcion.html">Inscripción</a></li>
+                <li><a href="equipo.html">Equipo</a></li>
+                <li><a href="perfil.html">Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <main>
+
+        <section id="inscripcion">
+
+            <h2>Inscripción a torneo</h2>
+
+            <p>
+                Completa los datos para registrar tu participación en un torneo.
+            </p>
+
+            <form id="form-inscripcion">
+
+                <div class="campo-formulario">
+                    <label for="torneo">Torneo:</label>
+
+                    <select id="torneo" name="torneo" required>
+                        <option value="">Selecciona un torneo</option>
+                        <option value="Arena Masters">Arena Masters</option>
+                        <option value="Legends Cup">Legends Cup</option>
+                        <option value="Rocket Championship">Rocket Championship</option>
+                    </select>
+                </div>
+
+
+                <div class="campo-formulario">
+
+                    <p>Tipo de participante:</p>
+
+                    <input type="radio" id="jugador" name="tipo-participante" value="jugador">
+
+                    <label for="jugador">Jugador</label>
+
+
+                    <input type="radio" id="equipo" name="tipo-participante" value="equipo">
+
+                    <label for="equipo">Equipo</label>
+
+                </div>
+
+
+                <div class="campo-formulario" id="campo-equipo">
+
+                    <label for="equipo-seleccionado">Equipo:</label>
+
+                    <select id="equipo-seleccionado" name="equipo-seleccionado">
+                        <option value="">Selecciona un equipo</option>
+                        <option value="Shadow Wolves">Shadow Wolves</option>
+                        <option value="Phoenix Squad">Phoenix Squad</option>
+                    </select>
+
+                </div>
+
+
+                <section id="requisitos-inscripcion">
+
+                    <h3>Requisitos del torneo</h3>
+
+                    <ul>
+                        <li>Inscripción dentro del plazo.</li>
+                        <li>Cupos disponibles.</li>
+                        <li>Equipo con integrantes suficientes.</li>
+                        <li>Participante sin sanciones vigentes.</li>
+                        <li>No estar previamente inscrito.</li>
+                    </ul>
+
+                </section>
+
+
+                <p id="mensaje-inscripcion" class="mensaje-error"></p>
+
+
+                <button type="submit" class="boton-primario">
+                    Inscribirse
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <section id="confirmacion-inscripcion">
+
+            <h2>Confirmación</h2>
+
+            <div id="resumen-inscripcion">
+                <p>Aún no se ha realizado una inscripción.</p>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>
+            &copy; 2026 eSports Arena Manager.
+            Todos los derechos reservados.
+        </p>
+    </footer>
+
+
+    <script src="js/datos.js"></script>
+    <script src="js/inscripcion.js"></script>
+
+</body>
+
+</html>

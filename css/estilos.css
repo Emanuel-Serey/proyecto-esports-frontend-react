@@ -1,0 +1,506 @@
+/* COLORES GENERALES*/
+
+:root {
+    --color-fondo: #0E0B16;
+    --color-superficie: #1C1430;
+    --color-primario: #9146FF;
+    --color-acento: #00F5D4;
+    --color-texto: #F1ECFF;
+    --color-error: #FF5C7A;
+}
+
+
+/* ESTILOS GENERALES */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    margin: 0;
+    font-family: Arial, sans-serif;
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+section {
+    background-color: var(--color-superficie);
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+}
+
+h2 {
+    color: var(--color-acento);
+}
+
+
+/* HEADER Y NAVEGACIÓN */
+
+header {
+    background-color: var(--color-superficie);
+    text-align: center;
+    padding: 25px;
+}
+
+header h1 {
+    margin-top: 0;
+    color: var(--color-texto);
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+nav a {
+    color: var(--color-texto);
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: var(--color-acento);
+}
+
+
+/*FOOTER */
+
+footer {
+    background-color: var(--color-superficie);
+    text-align: center;
+    padding: 20px;
+}
+
+
+/* BOTONES GENERALES*/
+
+.boton-primario {
+    background-color: var(--color-primario);
+    color: var(--color-texto);
+
+    border: none;
+    border-radius: 6px;
+
+    padding: 10px 18px;
+
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.boton-primario:hover {
+    background-color: var(--color-acento);
+    color: var(--color-fondo);
+}
+
+.boton-primario:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* MENSAJES  */
+
+#mensaje-filtro,
+#mensaje-inscripcion,
+#mensaje-equipo,
+#mensaje-apodo {
+    color: var(--color-error);
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+
+/* INICIO */
+
+#imagen-destacada img {
+    width: 100%;
+    max-height: 550px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+#lista-torneos,
+#lista-cierres {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.tarjeta-torneo {
+    background-color: var(--color-fondo);
+    border: 1px solid var(--color-primario);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.tarjeta-torneo h3 {
+    color: var(--color-acento);
+    margin-top: 0;
+}
+
+.tarjeta-cierre {
+    background-color: var(--color-fondo);
+    border-left: 5px solid var(--color-acento);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.tarjeta-cierre h3 {
+    color: var(--color-acento);
+    margin-top: 0;
+}
+
+#video iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+    border-radius: 8px;
+}
+
+
+/* VISTA TORNEOS*/
+
+#form-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#form-filtros input,
+#form-filtros select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--color-primario);
+}
+
+#form-filtros input[type="date"] {
+    width: 130px;
+}
+
+#form-filtros button {
+    padding: 8px 15px;
+    background-color: var(--color-primario);
+    color: var(--color-texto);
+
+    border: none;
+    border-radius: 6px;
+
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#form-filtros button:hover {
+    background-color: var(--color-acento);
+    color: var(--color-fondo);
+}
+
+#lista-torneos-completa {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+
+/* DETALLE DEL TORNEO*/
+
+#lista-participantes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#lista-participantes p {
+    background-color: var(--color-fondo);
+    border: 1px solid var(--color-primario);
+    padding: 10px 15px;
+    border-radius: 6px;
+}
+
+#lista-partidas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.tarjeta-partida {
+    background-color: var(--color-fondo);
+    border: 1px solid var(--color-primario);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.encabezado-partida {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.encabezado-partida div {
+    display: flex;
+    gap: 5px;
+}
+
+.encabezado-partida h3 {
+    color: var(--color-acento);
+    margin: 0;
+}
+
+.enfrentamiento {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin: 25px 0;
+    gap: 15px;
+
+    font-size: 18px;
+}
+
+.resultado {
+    color: var(--color-acento);
+    font-weight: bold;
+    font-size: 20px;
+}
+
+
+/* Tabla de clasificación */
+
+#tabla-clasificacion {
+    overflow-x: auto;
+}
+
+#tabla-clasificacion table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#tabla-clasificacion th,
+#tabla-clasificacion td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-primario);
+}
+
+#tabla-clasificacion th {
+    color: var(--color-acento);
+}
+
+
+/* Premios */
+
+#lista-premios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.tarjeta-premio {
+    background-color: var(--color-fondo);
+    border: 1px solid var(--color-primario);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.tarjeta-premio h3 {
+    color: var(--color-acento);
+    margin-top: 0;
+}
+
+
+/* INSCRIPCIÓN */
+
+#form-inscripcion {
+    margin-top: 20px;
+}
+
+.campo-formulario {
+    margin-bottom: 20px;
+}
+
+.campo-formulario label {
+    margin-right: 10px;
+}
+
+.campo-formulario input,
+.campo-formulario select {
+    padding: 8px;
+
+    border: 1px solid var(--color-primario);
+    border-radius: 6px;
+}
+
+#requisitos-inscripcion {
+    background-color: var(--color-fondo);
+    border: 1px solid var(--color-primario);
+
+    border-radius: 8px;
+
+    padding: 20px;
+    margin: 20px 0;
+}
+
+#requisitos-inscripcion h3 {
+    color: var(--color-acento);
+    margin-top: 0;
+}
+
+#campo-equipo {
+    display: none;
+}
+
+#resumen-inscripcion {
+    margin-top: 20px;
+}
+
+
+/* GESTIÓN DE EQUIPO */
+
+#form-equipo input,
+#form-equipo select {
+    padding: 8px;
+
+    border: 1px solid var(--color-primario);
+    border-radius: 6px;
+}
+
+#integrantes-equipo .campo-formulario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.integrante {
+    background-color: var(--color-fondo);
+    border: 1px solid var(--color-primario);
+    border-radius: 6px;
+
+    padding: 12px;
+    margin-bottom: 10px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+
+    gap: 20px;
+}
+
+.integrante span:nth-child(2) {
+    text-align: center;
+}
+
+.boton-quitar {
+    background-color: var(--color-error);
+    color: var(--color-texto);
+
+    border: none;
+    border-radius: 6px;
+
+    padding: 7px 12px;
+
+    cursor: pointer;
+
+    justify-self: end;
+}
+
+.boton-quitar:hover {
+    opacity: 0.8;
+}
+
+
+/* PERFIL DEL JUGADOR */
+
+#datos-jugador {
+    background-color: var(--color-fondo);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+#lista-equipos-jugador p {
+    background-color: var(--color-fondo);
+    border-left: 5px solid var(--color-acento);
+
+    padding: 12px;
+    border-radius: 6px;
+}
+
+#lista-historial {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+#datos-estadisticas {
+    background-color: var(--color-fondo);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+#form-apodo input {
+    padding: 8px;
+
+    border: 1px solid var(--color-primario);
+    border-radius: 6px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+
+    header {
+        padding: 20px 10px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    main {
+        padding: 20px 10px;
+    }
+
+    #form-filtros {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #form-filtros input,
+    #form-filtros select,
+    #form-filtros button {
+        width: 100%;
+    }
+
+    .enfrentamiento {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .integrante {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

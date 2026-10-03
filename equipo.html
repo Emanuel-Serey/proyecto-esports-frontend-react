@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Equipo | eSports Arena Manager</title>
+
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>eSports Arena Manager</h1>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="torneos.html">Torneos</a></li>
+                <li><a href="detalle-torneo.html">Detalle de torneo</a></li>
+                <li><a href="inscripcion.html">Inscripción</a></li>
+                <li><a href="equipo.html">Equipo</a></li>
+                <li><a href="perfil.html">Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <main>
+
+        <section id="gestion-equipo">
+
+            <h2>Gestión de equipo</h2>
+
+            <p>
+                Crea tu equipo y administra sus integrantes.
+            </p>
+
+
+            <form id="form-equipo">
+
+                <div class="campo-formulario">
+
+                    <label for="nombre-equipo">
+                        Nombre del equipo:
+                    </label>
+
+                    <input type="text" id="nombre-equipo" name="nombre-equipo" placeholder="Ej: Shadow Wolves"
+                        autocomplete="off">
+
+                </div>
+
+
+                <div class="campo-formulario">
+
+                    <label for="juego-equipo">
+                        Juego principal:
+                    </label>
+
+                    <select id="juego-equipo" name="juego-equipo">
+
+                        <option value="">
+                            Selecciona un juego
+                        </option>
+
+                        <option value="Valorant">
+                            Valorant
+                        </option>
+
+                        <option value="League of Legends">
+                            League of Legends
+                        </option>
+
+                        <option value="Rocket League">
+                            Rocket League
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="campo-formulario">
+
+                    <label for="capitan-equipo">
+                        Capitán:
+                    </label>
+
+                    <select id="capitan-equipo" name="capitan-equipo">
+
+                        <option value="">
+                            Selecciona un capitán
+                        </option>
+
+                        <option value="Pepito123">
+                            Pepito123
+                        </option>
+
+                        <option value="NightFox">
+                            NightFox
+                        </option>
+
+                        <option value="ZeroX">
+                            ZeroX
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <p id="mensaje-equipo" class="mensaje-error"></p>
+
+                <button type="submit" id="btn-crear-equipo" class="boton-primario">
+                    Crear equipo
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <section id="integrantes-equipo" hidden>
+
+            <h2 id="titulo-integrantes">Integrantes</h2>
+
+            <div class="campo-formulario">
+
+                <label for="nuevo-integrante">
+                    Agregar jugador:
+                </label>
+
+                <select id="nuevo-integrante">
+                    <option value="">Selecciona un jugador</option>
+                    <option value="Pepito123">Pepito123</option>
+                    <option value="NightFox">NightFox</option>
+                    <option value="ZeroX">ZeroX</option>
+                    <option value="DragonPro">DragonPro</option>
+                </select>
+
+
+                <label for="rol-integrante">
+                    Rol:
+                </label>
+
+                <select id="rol-integrante">
+                    <option value="">Selecciona un rol</option>
+                    <option value="Titular">Titular</option>
+                    <option value="Suplente">Suplente</option>
+                </select>
+
+
+                <button type="button" id="btn-agregar-integrante" class="boton-primario">
+                    Agregar
+                </button>
+
+            </div>
+
+
+            <div id="lista-integrantes">
+                <p>Aún no hay integrantes en el equipo.</p>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>
+            &copy; 2026 eSports Arena Manager. Todos los derechos reservados.
+        </p>
+    </footer>
+
+
+    <script src="js/datos.js"></script>
+    <script src="js/equipo.js"></script>
+
+</body>
+
+</html>
