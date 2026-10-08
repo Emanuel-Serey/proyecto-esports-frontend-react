@@ -4,6 +4,7 @@ import Cabecera from "./components/Cabecera.jsx";
 import PieDePagina from "./components/PieDePagina.jsx";
 
 import Inicio from "./views/inicio.jsx";
+import Torneos from "./views/torneos.jsx";
 
 
 function App() {
@@ -21,6 +22,11 @@ function App() {
                     <Route
                         path="/"
                         element={<Inicio />}
+                    />
+
+                    <Route
+                        path="/torneos"
+                        element={<Torneos />}
                     />
 
                 </Routes>
