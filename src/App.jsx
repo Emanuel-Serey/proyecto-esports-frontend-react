@@ -1,5 +1,9 @@
+import { Route, Routes } from "react-router-dom";
+
 import Cabecera from "./components/Cabecera.jsx";
 import PieDePagina from "./components/PieDePagina.jsx";
+
+import Inicio from "./views/inicio.jsx";
 
 
 function App() {
@@ -10,17 +14,18 @@ function App() {
 
             <Cabecera />
 
-            <main className="container py-4 flex-grow-1">
+            <div className="flex-grow-1">
 
-                <h1>
-                    eSports Arena Manager
-                </h1>
+                <Routes>
 
-                <p>
-                    Migración del proyecto a React.
-                </p>
+                    <Route
+                        path="/"
+                        element={<Inicio />}
+                    />
 
-            </main>
+                </Routes>
+
+            </div>
 
             <PieDePagina />
 
