@@ -1,19 +1,15 @@
+import FormularioEquipo
+    from "../components/FormularioEquipo.jsx";
+
+
 function Equipo() {
 
     return (
-
         <main className="container py-4">
 
-            <h1>
-                Gestión de equipo
-            </h1>
-
-            <p>
-                Vista en proceso de migración.
-            </p>
+            <FormularioEquipo />
 
         </main>
-
     );
 }
 
