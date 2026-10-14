@@ -17,16 +17,13 @@ function FormularioEquipo() {
     const [mensaje, setMensaje] = useState("");
 
     useEffect(function () {
-        equiposService.obtenerDatosEquipo()
-            .then(function (datos) {
-                setJugadores(datos.jugadores);
-                setNombresEquipos(
-                    datos.equipos.map(function (equipo) {
-                        return equipo.nombre;
-                    })
-                );
-                setCargando(false);
-            });
+        equiposService.obtenerDatosEquipo().then(function (datos) {
+            setJugadores(datos.jugadores);
+            setNombresEquipos(datos.equipos.map(function (equipo) {
+                return equipo.nombre;
+            }));
+            setCargando(false);
+        });
     }, []);
 
     function crearEquipo(event) {
