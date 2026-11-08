@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
 import {
     obtenerDetalleTorneo
 } from "../services/torneosService.js";
 
-import ListaPartidas from "../components/ListaPartidas.jsx";
-import TablaRanking from "../components/TablaRanking.jsx";
-
 
 function DetalleTorneo() {
+
+    const { id } = useParams();
 
     const [torneo, setTorneo] =
         useState(null);
@@ -16,53 +16,98 @@ function DetalleTorneo() {
     const [cargando, setCargando] =
         useState(true);
 
+    const [error, setError] =
+        useState("");
+
 
     useEffect(function () {
 
-        obtenerDetalleTorneo()
+        obtenerDetalleTorneo(id)
             .then(function (datos) {
 
                 setTorneo(datos);
+
+            })
+            .catch(function (error) {
+
+                setError(error.message);
+
+            })
+            .finally(function () {
+
                 setCargando(false);
 
             });
 
-    }, []);
+    }, [id]);
 
+
+    // CARGANDO
 
     if (cargando) {
 
         return (
+
             <main className="container py-4">
 
                 <section>
+
                     <p>
                         Cargando detalle del torneo...
                     </p>
+
                 </section>
 
             </main>
+
         );
     }
 
 
-    const cuposDisponibles =
-        torneo.cupoMaximo -
-        torneo.inscritos;
+    // ERROR
+
+    if (error) {
+
+        return (
+
+            <main className="container py-4">
+
+                <section>
+
+                    <div
+                        className="alert alert-danger"
+                        role="alert"
+                    >
+                        {error}
+                    </div>
+
+                    <Link
+                        to="/torneos"
+                        className="btn btn-primary"
+                    >
+                        Volver a torneos
+                    </Link>
+
+                </section>
+
+            </main>
+
+        );
+    }
 
 
     return (
+
         <main className="container py-4">
 
 
-            {/* Información general */}
+            {/* INFORMACIÓN GENERAL */}
 
             <section className="mb-4">
 
                 <h2 className="mb-3">
                     Detalle de torneo
                 </h2>
-
 
                 <article className="card">
 
@@ -78,20 +123,31 @@ function DetalleTorneo() {
                             <div className="col-12 col-md-6">
 
                                 <p>
-                                    Juego: {torneo.juego}
+                                    <strong>
+                                        Juego:
+                                    </strong>{" "}
+                                    {torneo.juego}
                                 </p>
 
                                 <p>
-                                    Modalidad: {torneo.modalidad}
+                                    <strong>
+                                        Modalidad:
+                                    </strong>{" "}
+                                    {torneo.modalidad}
                                 </p>
 
                                 <p>
-                                    Integrantes por equipo:{" "}
-                                    {torneo.integrantesPorEquipo}
+                                    <strong>
+                                        Estado:
+                                    </strong>{" "}
+                                    {torneo.estado}
                                 </p>
 
                                 <p>
-                                    Estado: {torneo.estado}
+                                    <strong>
+                                        Cupo máximo:
+                                    </strong>{" "}
+                                    {torneo.cupoMaximo}
                                 </p>
 
                             </div>
@@ -100,28 +156,37 @@ function DetalleTorneo() {
                             <div className="col-12 col-md-6">
 
                                 <p>
-                                    Cupos ocupados:{" "}
-                                    {torneo.inscritos} /{" "}
-                                    {torneo.cupoMaximo}
-                                </p>
-
-                                <p>
-                                    Cupos disponibles:{" "}
-                                    {cuposDisponibles}
-                                </p>
-
-                                <p>
-                                    Cierre de inscripción:{" "}
+                                    <strong>
+                                        Cierre de inscripción:
+                                    </strong>{" "}
                                     {torneo.cierreInscripcion}
                                 </p>
 
                                 <p>
-                                    Formato: {torneo.formato}
+                                    <strong>
+                                        Fecha de inicio:
+                                    </strong>{" "}
+                                    {torneo.fechaInicio}
+                                </p>
+
+                                <p>
+                                    <strong>
+                                        Fecha de término:
+                                    </strong>{" "}
+                                    {torneo.fechaFin}
                                 </p>
 
                             </div>
 
                         </div>
+
+
+                        <Link
+                            to="/torneos"
+                            className="btn btn-outline-primary mt-3"
+                        >
+                            Volver a torneos
+                        </Link>
 
                     </div>
 
@@ -130,7 +195,7 @@ function DetalleTorneo() {
             </section>
 
 
-            {/* Participantes */}
+            {/* PARTICIPANTES INSCRITOS */}
 
             <section className="mb-4">
 
@@ -139,106 +204,72 @@ function DetalleTorneo() {
                 </h2>
 
 
-                <div className="d-flex flex-wrap gap-2">
+                {torneo.inscripciones.length === 0 ? (
 
-                    {torneo.participantes.map(
-                        function (participante) {
+                    <div
+                        className="alert alert-secondary"
+                        role="alert"
+                    >
+                        No hay participantes inscritos actualmente.
+                    </div>
 
-                            return (
-                                <span
-                                    className="badge text-bg-secondary fs-6"
-                                    key={participante}
-                                >
-                                    {participante}
-                                </span>
-                            );
+                ) : (
 
-                        }
-                    )}
+                    <div className="row g-3">
 
-                </div>
+                        {torneo.inscripciones.map(
+                            function (inscripcion) {
 
-            </section>
+                                return (
 
+                                    <div
+                                        className="col-12 col-md-6 col-lg-4"
+                                        key={inscripcion.id}
+                                    >
 
-            {/* Partidas */}
+                                        <article className="card h-100">
 
-            <section className="mb-4">
+                                            <div className="card-body">
 
-                <h2 className="mb-3">
-                    Partidas programadas
-                </h2>
+                                                <h3 className="h5 card-title">
+                                                    Participante
+                                                </h3>
 
-                <ListaPartidas
-                    partidas={torneo.partidas}
-                    formato={torneo.formato}
-                />
+                                                <p className="card-text">
+                                                    Tipo:{" "}
+                                                    {inscripcion.tipoParticipante}
+                                                </p>
 
-            </section>
+                                                <p className="card-text">
+                                                    Estado:{" "}
+                                                    {inscripcion.estado}
+                                                </p>
 
+                                                <p className="card-text mb-0">
+                                                    Fecha de inscripción:{" "}
+                                                    {inscripcion.fechaInscripcion}
+                                                </p>
 
-            {/* Ranking */}
+                                            </div>
 
-            <section className="mb-4">
+                                        </article>
 
-                <h2 className="mb-3">
-                    Tabla de posiciones
-                </h2>
+                                    </div>
 
-                <TablaRanking
-                    clasificacion={torneo.clasificacion}
-                />
+                                );
 
-            </section>
+                            }
+                        )}
 
+                    </div>
 
-            {/* Premios */}
-
-            <section className="mb-4">
-
-                <h2 className="mb-3">
-                    Premios
-                </h2>
-
-
-                <div className="row g-3">
-
-                    {torneo.premios.map(
-                        function (premio) {
-
-                            return (
-                                <div
-                                    className="col-12 col-md-4"
-                                    key={premio.posicion}
-                                >
-
-                                    <article className="card h-100">
-
-                                        <div className="card-body">
-
-                                            <h3 className="h5 card-title">
-                                                {premio.posicion}° lugar
-                                            </h3>
-
-                                            <p className="card-text">
-                                                Premio: {premio.premio}
-                                            </p>
-
-                                        </div>
-
-                                    </article>
-
-                                </div>
-                            );
-
-                        }
-                    )}
-
-                </div>
+                )}
 
             </section>
+
 
         </main>
+
     );
 }
 
