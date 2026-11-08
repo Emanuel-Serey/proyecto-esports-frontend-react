@@ -1,6 +1,11 @@
+import { Link } from "react-router-dom";
+
 function TarjetaTorneo({ torneo }) {
+
     return (
+
         <article className="card h-100">
+
             <div className="card-body">
 
                 <h3 className="card-title">
@@ -20,16 +25,34 @@ function TarjetaTorneo({ torneo }) {
                 </p>
 
                 <p className="card-text">
-                    Cupos: {torneo.inscritos} / {torneo.cupoMaximo}
+                    Cupo máximo: {torneo.cupoMaximo}
                 </p>
 
                 <p className="card-text">
                     Cierre de inscripción: {torneo.cierreInscripcion}
                 </p>
 
+                <p className="card-text">
+                    Inicio: {torneo.fechaInicio}
+                </p>
+
+                <p className="card-text">
+                    Fin: {torneo.fechaFin}
+                </p>
+
+                <Link
+                    to={`/detalle/${torneo.id}`}
+                    className="btn btn-outline-primary"
+                >
+                    Ver detalle
+                </Link>
+
             </div>
+
         </article>
+
     );
 }
+
 
 export default TarjetaTorneo;
