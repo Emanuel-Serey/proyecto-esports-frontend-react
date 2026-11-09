@@ -1,224 +1,496 @@
-import { useEffect, useState } from "react";
-import { equiposService } from "../services/equiposService.js";
-import ListaIntegrantes from "./ListaIntegrantes.jsx";
+import { useEffect, useMemo, useState } from "react";
+
+import {
+    equiposService
+} from "../services/equiposService.js";
+
+import ListaIntegrantes
+    from "./ListaIntegrantes.jsx";
+
 
 function FormularioEquipo() {
+
+    const [usuario, setUsuario] = useState(null);
     const [jugadores, setJugadores] = useState([]);
-    const [nombresEquipos, setNombresEquipos] = useState([]);
-    const [cargando, setCargando] = useState(true);
+    const [juegos, setJuegos] = useState([]);
+
+    const [equipoActual, setEquipoActual] = useState(null);
+    const [integrantes, setIntegrantes] = useState([]);
 
     const [nombreEquipo, setNombreEquipo] = useState("");
     const [juegoEquipo, setJuegoEquipo] = useState("");
-    const [capitanEquipo, setCapitanEquipo] = useState("");
-    const [equipoActual, setEquipoActual] = useState(null);
-    const [integrantes, setIntegrantes] = useState([]);
+
     const [nuevoIntegrante, setNuevoIntegrante] = useState("");
     const [rolIntegrante, setRolIntegrante] = useState("");
+
     const [mensaje, setMensaje] = useState("");
+    const [cargando, setCargando] = useState(true);
+
 
     useEffect(function () {
-        equiposService.obtenerDatosEquipo().then(function (datos) {
-            setJugadores(datos.jugadores);
-            setNombresEquipos(datos.equipos.map(function (equipo) {
-                return equipo.nombre;
-            }));
-            setCargando(false);
-        });
+
+        equiposService.obtenerDatosEquipo()
+            .then(function (datos) {
+
+                setUsuario(datos.usuario);
+
+                setJugadores(
+                    datos.jugadores.filter(function (jugador) {
+                        return jugador.estado === "ACTIVO";
+                    })
+                );
+
+                setJuegos(
+                    datos.juegos.filter(function (juego) {
+                        return juego.estado === true;
+                    })
+                );
+
+
+                const equipoActivo =
+                    datos.equipos.find(function (equipo) {
+                        return equipo.estado === "ACTIVO";
+                    });
+
+
+                if (equipoActivo) {
+
+                    setEquipoActual(equipoActivo);
+
+                    setNombreEquipo(
+                        equipoActivo.nombre
+                    );
+
+                    setJuegoEquipo(
+                        String(
+                            equipoActivo.juegoPrincipalId
+                        )
+                    );
+
+                    setIntegrantes(
+                        equipoActivo.miembros || []
+                    );
+                }
+
+            })
+            .catch(function (error) {
+
+                setMensaje(error.message);
+
+            })
+            .finally(function () {
+
+                setCargando(false);
+
+            });
+
     }, []);
 
-    function crearEquipo(event) {
+
+    const jugadoresDisponibles =
+        useMemo(function () {
+
+            return jugadores.filter(function (jugador) {
+
+                if (
+                    usuario &&
+                    jugador.id === usuario.id
+                ) {
+                    return false;
+                }
+
+
+                const yaPertenece =
+                    integrantes.some(function (miembro) {
+                        return (
+                            miembro.usuarioId ===
+                            jugador.id
+                        );
+                    });
+
+
+                return !yaPertenece;
+
+            });
+
+        }, [
+            jugadores,
+            integrantes,
+            usuario
+        ]);
+
+
+    const integrantesVisuales =
+        integrantes.map(function (miembro) {
+
+            const jugador =
+                jugadores.find(function (item) {
+                    return (
+                        item.id ===
+                        miembro.usuarioId
+                    );
+                });
+
+
+            return {
+                ...miembro,
+
+                jugador:
+                    jugador
+                        ? jugador.nickname
+                        : `Usuario ${miembro.usuarioId}`,
+
+                rol:
+                    formatearRol(
+                        miembro.rolDentroEquipo
+                    )
+            };
+
+        });
+
+
+    function formatearRol(rol) {
+
+        if (rol === "CAPITAN") {
+            return "Capitán";
+        }
+
+        if (rol === "TITULAR") {
+            return "Titular";
+        }
+
+        if (rol === "SUPLENTE") {
+            return "Suplente";
+        }
+
+        return rol;
+    }
+
+
+    async function crearEquipo(event) {
+
         event.preventDefault();
+
         setMensaje("");
+
+
+        if (!usuario) {
+
+            setMensaje(
+                "No se pudo identificar al usuario autenticado."
+            );
+
+            return;
+        }
+
 
         if (nombreEquipo.trim() === "") {
-            setMensaje("Debes ingresar un nombre para el equipo.");
+
+            setMensaje(
+                "Debes ingresar un nombre para el equipo."
+            );
+
             return;
         }
+
 
         if (juegoEquipo === "") {
-            setMensaje("Debes seleccionar un juego principal.");
+
+            setMensaje(
+                "Debes seleccionar un juego principal."
+            );
+
             return;
         }
 
-        if (capitanEquipo === "") {
-            setMensaje("Debes seleccionar un capitán.");
-            return;
-        }
-
-        const nombreRepetido = nombresEquipos.some(function (nombre) {
-            return nombre.toLowerCase() === nombreEquipo.trim().toLowerCase();
-        });
-
-        if (nombreRepetido) {
-            setMensaje("Ya existe un equipo con este nombre.");
-            return;
-        }
-
-        const integrantesIniciales = [
-            {
-                jugador: capitanEquipo,
-                rol: "Capitán"
-            }
-        ];
 
         const nuevoEquipo = {
-            nombre: nombreEquipo.trim(),
-            juego: juegoEquipo,
-            capitan: capitanEquipo,
-            miembros: integrantesIniciales,
-            estado: "Activo"
+
+            nombre:
+                nombreEquipo.trim(),
+
+            capitanId:
+                usuario.id,
+
+            juegoPrincipalId:
+                Number(juegoEquipo),
+
+            miembros: [
+                {
+                    usuarioId:
+                        usuario.id,
+
+                    rolDentroEquipo:
+                        "CAPITAN"
+                }
+            ]
+
         };
 
-        equiposService.crearEquipo(nuevoEquipo)
-            .then(function (equipoCreado) {
-                setEquipoActual(equipoCreado);
 
-                setNombresEquipos(function (anteriores) {
-                    return [...anteriores, equipoCreado.nombre];
-                });
+        try {
 
-                setIntegrantes(equipoCreado.miembros);
-                setMensaje("Equipo creado correctamente.");
-            })
-            .catch(function (error) {
-                setMensaje(error.message);
-            });
+            const equipoCreado =
+                await equiposService.crearEquipo(
+                    nuevoEquipo
+                );
+
+
+            setEquipoActual(
+                equipoCreado
+            );
+
+            setIntegrantes(
+                equipoCreado.miembros || []
+            );
+
+            setMensaje(
+                "Equipo creado correctamente."
+            );
+
+        } catch (error) {
+
+            setMensaje(
+                error.message
+            );
+
+        }
     }
 
-    function agregarIntegrante() {
+
+    async function agregarIntegrante() {
+
         setMensaje("");
+
+
+        if (!equipoActual) {
+
+            setMensaje(
+                "Primero debes crear un equipo."
+            );
+
+            return;
+        }
+
 
         if (nuevoIntegrante === "") {
-            setMensaje("Debes seleccionar un jugador.");
+
+            setMensaje(
+                "Debes seleccionar un jugador."
+            );
+
             return;
         }
+
 
         if (rolIntegrante === "") {
-            setMensaje("Debes seleccionar un rol.");
+
+            setMensaje(
+                "Debes seleccionar un rol."
+            );
+
             return;
         }
 
-        const jugadorRepetido = integrantes.some(function (integrante) {
-            return integrante.jugador === nuevoIntegrante;
-        });
 
-        if (jugadorRepetido) {
-            setMensaje("Este jugador ya pertenece al equipo.");
-            return;
-        }
+        const miembro = {
 
-        const integrantesActualizados = [
-            ...integrantes,
-            {
-                jugador: nuevoIntegrante,
-                rol: rolIntegrante
-            }
-        ];
+            usuarioId:
+                Number(nuevoIntegrante),
 
-        equiposService.actualizarEquipo(
-            equipoActual.nombre,
-            {
-                miembros: integrantesActualizados,
-                integrantes: integrantesActualizados.length
-            }
-        )
-            .then(function (equipoActualizado) {
-                setEquipoActual(equipoActualizado);
-                setIntegrantes(equipoActualizado.miembros);
-                setNuevoIntegrante("");
-                setRolIntegrante("");
-                setMensaje("Integrante agregado correctamente.");
-            })
-            .catch(function (error) {
-                setMensaje(error.message);
+            rolDentroEquipo:
+                rolIntegrante
+
+        };
+
+
+        try {
+
+            const miembroCreado =
+                await equiposService.agregarMiembro(
+                    equipoActual.id,
+                    miembro
+                );
+
+
+            setIntegrantes(function (anteriores) {
+
+                return [
+                    ...anteriores,
+                    miembroCreado
+                ];
+
             });
+
+
+            setNuevoIntegrante("");
+            setRolIntegrante("");
+
+            setMensaje(
+                "Integrante agregado correctamente."
+            );
+
+        } catch (error) {
+
+            setMensaje(
+                error.message
+            );
+
+        }
     }
 
-    function quitarIntegrante(indiceQuitar) {
+
+    async function quitarIntegrante(
+        indiceQuitar
+    ) {
+
         setMensaje("");
 
-        const integranteQuitar = integrantes[indiceQuitar];
 
-        if (integranteQuitar.rol === "Capitán") {
-            setMensaje("El capitán no puede ser eliminado del equipo.");
+        const integrante =
+            integrantesVisuales[
+                indiceQuitar
+            ];
+
+
+        if (
+            integrante.rolDentroEquipo ===
+            "CAPITAN"
+        ) {
+
+            setMensaje(
+                "El capitán no puede ser eliminado del equipo."
+            );
+
             return;
         }
 
-        const integrantesActualizados = integrantes.filter(
-            function (integrante, indice) {
-                return indice !== indiceQuitar;
-            }
-        );
 
-        equiposService.actualizarEquipo(
-            equipoActual.nombre,
-            {
-                miembros: integrantesActualizados,
-                integrantes: integrantesActualizados.length
-            }
-        )
-            .then(function (equipoActualizado) {
-                setEquipoActual(equipoActualizado);
-                setIntegrantes(equipoActualizado.miembros);
-                setMensaje("Integrante eliminado correctamente.");
-            })
-            .catch(function (error) {
-                setMensaje(error.message);
+        try {
+
+            await equiposService.eliminarMiembro(
+                equipoActual.id,
+                integrante.id
+            );
+
+
+            setIntegrantes(function (anteriores) {
+
+                return anteriores.filter(
+                    function (miembro) {
+
+                        return (
+                            miembro.id !==
+                            integrante.id
+                        );
+
+                    }
+                );
+
             });
+
+
+            setMensaje(
+                "Integrante eliminado correctamente."
+            );
+
+        } catch (error) {
+
+            setMensaje(
+                error.message
+            );
+
+        }
     }
 
-    function borrarEquipo() {
+
+    async function borrarEquipo() {
+
         setMensaje("");
 
-        equiposService.eliminarEquipo(equipoActual.nombre)
-            .then(function () {
-                setNombresEquipos(function (anteriores) {
-                    return anteriores.filter(function (nombre) {
-                        return nombre !== equipoActual.nombre;
-                    });
-                });
 
-                setEquipoActual(null);
-                setIntegrantes([]);
-                setNombreEquipo("");
-                setJuegoEquipo("");
-                setCapitanEquipo("");
-                setNuevoIntegrante("");
-                setRolIntegrante("");
-                setMensaje("Equipo eliminado correctamente.");
-            })
-            .catch(function (error) {
-                setMensaje(error.message);
-            });
+        if (!equipoActual) {
+            return;
+        }
+
+
+        try {
+
+            await equiposService.eliminarEquipo(
+                equipoActual.id
+            );
+
+
+            setEquipoActual(null);
+            setIntegrantes([]);
+
+            setNombreEquipo("");
+            setJuegoEquipo("");
+            setNuevoIntegrante("");
+            setRolIntegrante("");
+
+            setMensaje(
+                "Equipo eliminado correctamente."
+            );
+
+        } catch (error) {
+
+            setMensaje(
+                error.message
+            );
+
+        }
     }
+
 
     if (cargando) {
+
         return (
+
             <section className="card mb-4">
+
                 <div className="card-body">
+
                     <p className="mb-0">
                         Cargando información de equipos...
                     </p>
+
                 </div>
+
             </section>
+
         );
     }
 
+
     return (
+
         <>
+
             <section className="card mb-4">
+
                 <div className="card-body">
+
                     <h2 className="card-title">
                         Gestión de equipo
                     </h2>
 
+
                     <p className="card-text">
-                        Crea tu equipo y administra sus integrantes.
+
+                        Crea tu equipo y administra
+                        sus integrantes.
+
                     </p>
 
+
                     <form onSubmit={crearEquipo}>
+
                         <div className="row g-3">
+
+
                             <div className="col-12 col-md-4">
+
                                 <label
                                     htmlFor="nombre-equipo"
                                     className="form-label"
@@ -226,20 +498,33 @@ function FormularioEquipo() {
                                     Nombre del equipo:
                                 </label>
 
+
                                 <input
                                     id="nombre-equipo"
                                     type="text"
                                     className="form-control"
                                     value={nombreEquipo}
-                                    disabled={equipoActual !== null}
-                                    onChange={function (event) {
-                                        setNombreEquipo(event.target.value);
-                                        setMensaje("");
-                                    }}
+                                    disabled={
+                                        equipoActual !== null
+                                    }
+                                    onChange={
+                                        function (event) {
+
+                                            setNombreEquipo(
+                                                event.target.value
+                                            );
+
+                                            setMensaje("");
+
+                                        }
+                                    }
                                 />
+
                             </div>
 
+
                             <div className="col-12 col-md-4">
+
                                 <label
                                     htmlFor="juego-equipo"
                                     className="form-label"
@@ -247,87 +532,127 @@ function FormularioEquipo() {
                                     Juego principal:
                                 </label>
 
+
                                 <select
                                     id="juego-equipo"
                                     className="form-select"
                                     value={juegoEquipo}
-                                    disabled={equipoActual !== null}
-                                    onChange={function (event) {
-                                        setJuegoEquipo(event.target.value);
-                                        setMensaje("");
-                                    }}
+                                    disabled={
+                                        equipoActual !== null
+                                    }
+                                    onChange={
+                                        function (event) {
+
+                                            setJuegoEquipo(
+                                                event.target.value
+                                            );
+
+                                            setMensaje("");
+
+                                        }
+                                    }
                                 >
+
                                     <option value="">
                                         Selecciona un juego
                                     </option>
-                                    <option value="Valorant">
-                                        Valorant
-                                    </option>
-                                    <option value="League of Legends">
-                                        League of Legends
-                                    </option>
-                                    <option value="Rocket League">
-                                        Rocket League
-                                    </option>
+
+
+                                    {juegos.map(
+                                        function (juego) {
+
+                                            return (
+
+                                                <option
+                                                    key={juego.id}
+                                                    value={juego.id}
+                                                >
+                                                    {juego.nombre}
+                                                </option>
+
+                                            );
+
+                                        }
+                                    )}
+
                                 </select>
+
                             </div>
 
+
                             <div className="col-12 col-md-4">
+
                                 <label
-                                    htmlFor="capitan-equipo"
                                     className="form-label"
                                 >
                                     Capitán:
                                 </label>
 
-                                <select
-                                    id="capitan-equipo"
-                                    className="form-select"
-                                    value={capitanEquipo}
-                                    disabled={equipoActual !== null}
-                                    onChange={function (event) {
-                                        setCapitanEquipo(event.target.value);
-                                        setMensaje("");
-                                    }}
-                                >
-                                    <option value="">
-                                        Selecciona un capitán
-                                    </option>
 
-                                    {jugadores.map(function (jugador) {
-                                        return (
-                                            <option
-                                                key={jugador}
-                                                value={jugador}
-                                            >
-                                                {jugador}
-                                            </option>
-                                        );
-                                    })}
-                                </select>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={
+                                        usuario
+                                            ? usuario.nickname
+                                            : ""
+                                    }
+                                    disabled
+                                />
+
                             </div>
+
                         </div>
+
 
                         <button
                             type="submit"
                             className="btn btn-primary mt-3"
-                            disabled={equipoActual !== null}
+                            disabled={
+                                equipoActual !== null
+                            }
                         >
-                            {equipoActual
-                                ? "Equipo creado"
-                                : "Crear equipo"}
+
+                            {
+                                equipoActual
+                                    ? "Equipo creado"
+                                    : "Crear equipo"
+                            }
+
                         </button>
+
                     </form>
+
                 </div>
+
             </section>
 
+
             {equipoActual && (
+
                 <section className="card mb-4">
+
                     <div className="card-body">
-                        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+
+
+                        <div
+                            className="
+                                d-flex
+                                justify-content-between
+                                align-items-center
+                                flex-wrap
+                                gap-2
+                                mb-3
+                            "
+                        >
+
                             <h2 className="card-title mb-0">
-                                Integrantes de {equipoActual.nombre}
+
+                                Integrantes de{" "}
+                                {equipoActual.nombre}
+
                             </h2>
+
 
                             <button
                                 type="button"
@@ -336,10 +661,22 @@ function FormularioEquipo() {
                             >
                                 Eliminar equipo
                             </button>
+
                         </div>
 
-                        <div className="row g-3 align-items-end mb-4">
+
+                        <div
+                            className="
+                                row
+                                g-3
+                                align-items-end
+                                mb-4
+                            "
+                        >
+
+
                             <div className="col-12 col-md-5">
+
                                 <label
                                     htmlFor="nuevo-integrante"
                                     className="form-label"
@@ -347,35 +684,53 @@ function FormularioEquipo() {
                                     Agregar jugador:
                                 </label>
 
+
                                 <select
                                     id="nuevo-integrante"
                                     className="form-select"
                                     value={nuevoIntegrante}
-                                    onChange={function (event) {
-                                        setNuevoIntegrante(
-                                            event.target.value
-                                        );
-                                        setMensaje("");
-                                    }}
+                                    onChange={
+                                        function (event) {
+
+                                            setNuevoIntegrante(
+                                                event.target.value
+                                            );
+
+                                            setMensaje("");
+
+                                        }
+                                    }
                                 >
+
                                     <option value="">
                                         Selecciona un jugador
                                     </option>
 
-                                    {jugadores.map(function (jugador) {
-                                        return (
-                                            <option
-                                                key={jugador}
-                                                value={jugador}
-                                            >
-                                                {jugador}
-                                            </option>
-                                        );
-                                    })}
+
+                                    {jugadoresDisponibles.map(
+                                        function (jugador) {
+
+                                            return (
+
+                                                <option
+                                                    key={jugador.id}
+                                                    value={jugador.id}
+                                                >
+                                                    {jugador.nickname}
+                                                </option>
+
+                                            );
+
+                                        }
+                                    )}
+
                                 </select>
+
                             </div>
 
+
                             <div className="col-12 col-md-4">
+
                                 <label
                                     htmlFor="rol-integrante"
                                     className="form-label"
@@ -383,30 +738,43 @@ function FormularioEquipo() {
                                     Rol:
                                 </label>
 
+
                                 <select
                                     id="rol-integrante"
                                     className="form-select"
                                     value={rolIntegrante}
-                                    onChange={function (event) {
-                                        setRolIntegrante(
-                                            event.target.value
-                                        );
-                                        setMensaje("");
-                                    }}
+                                    onChange={
+                                        function (event) {
+
+                                            setRolIntegrante(
+                                                event.target.value
+                                            );
+
+                                            setMensaje("");
+
+                                        }
+                                    }
                                 >
+
                                     <option value="">
                                         Selecciona un rol
                                     </option>
-                                    <option value="Titular">
+
+                                    <option value="TITULAR">
                                         Titular
                                     </option>
-                                    <option value="Suplente">
+
+                                    <option value="SUPLENTE">
                                         Suplente
                                     </option>
+
                                 </select>
+
                             </div>
 
+
                             <div className="col-12 col-md-3">
+
                                 <button
                                     type="button"
                                     className="btn btn-primary w-100"
@@ -414,21 +782,35 @@ function FormularioEquipo() {
                                 >
                                     Agregar
                                 </button>
+
                             </div>
+
                         </div>
 
+
                         <ListaIntegrantes
-                            integrantes={integrantes}
-                            onQuitar={quitarIntegrante}
+                            integrantes={
+                                integrantesVisuales
+                            }
+                            onQuitar={
+                                quitarIntegrante
+                            }
                         />
+
                     </div>
+
                 </section>
+
             )}
 
+
             {mensaje && (
+
                 <div
                     className={
-                        mensaje.includes("correctamente")
+                        mensaje.includes(
+                            "correctamente"
+                        )
                             ? "alert alert-success"
                             : "alert alert-danger"
                     }
@@ -436,9 +818,13 @@ function FormularioEquipo() {
                 >
                     {mensaje}
                 </div>
+
             )}
+
         </>
+
     );
 }
+
 
 export default FormularioEquipo;
