@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-
+import PanelAdmin from "./views/panel-admin.jsx";
+import PanelOrganizador from "./views/panel-organizador.jsx";
 import Cabecera from "./components/Cabecera.jsx";
 import PieDePagina from "./components/PieDePagina.jsx";
 
@@ -9,7 +10,9 @@ import DetalleTorneo from "./views/detalle-torneo.jsx";
 import Inscripcion from "./views/inscripcion.jsx";
 import Equipo from "./views/equipo.jsx";
 import Perfil from "./views/perfil.jsx";
-
+import Login from "./views/login.jsx";
+import Registro from "./views/registro.jsx";
+import RutaProtegida from "./components/RutaProtegida.jsx";
 
 function App() {
 
@@ -34,23 +37,63 @@ function App() {
                     />
 
                     <Route
-                        path="/detalle"
+                        path="/detalle/:id"
                         element={<DetalleTorneo />}
                     />
 
                     <Route
                         path="/inscripcion"
-                        element={<Inscripcion />}
+                        element={
+                            <RutaProtegida rolesPermitidos={["JUGADOR"]}>
+                                <Inscripcion />
+                            </RutaProtegida>
+                        }
                     />
 
                     <Route
                         path="/equipo"
-                        element={<Equipo />}
+                        element={
+                            <RutaProtegida rolesPermitidos={["JUGADOR"]}>
+                                <Equipo />
+                            </RutaProtegida>
+                        }
                     />
 
                     <Route
                         path="/perfil"
-                        element={<Perfil />}
+                        element={
+                            <RutaProtegida rolesPermitidos={["JUGADOR"]}>
+                                <Perfil />
+                            </RutaProtegida>
+                        }
+                    />
+
+                    <Route
+                        path="/admin"
+                        element={
+                            <RutaProtegida rolesPermitidos={["ADMIN"]}>
+                                <PanelAdmin />
+                            </RutaProtegida>
+                        }
+                    />
+
+                    <Route
+                        path="/organizador"
+                        element={
+                            <RutaProtegida rolesPermitidos={["ORGANIZADOR"]}>
+                                <PanelOrganizador />
+                            </RutaProtegida>
+                        }
+                    />
+
+                    <Route
+                        path="/login"
+                        element={<Login />}
+                    />
+
+                    <Route
+                        path="/registro"
+                        element={<Registro />}
                     />
 
                 </Routes>
