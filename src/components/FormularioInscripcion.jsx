@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
+import {
+    useEffect,
+    useMemo,
+    useState
+} from "react";
 
 import {
-    obtenerDatosInscripcion
+    obtenerDatosInscripcion,
+    crearInscripcion
 } from "../services/inscripcionesService.js";
-
-import {
-    cuposDisponibles,
-    inscripcionFueraDePlazo,
-    tieneSancionActiva,
-    equipoCompleto
-} from "../utils/validaciones.js";
 
 
 function FormularioInscripcion() {
@@ -23,27 +21,26 @@ function FormularioInscripcion() {
     const [usuario, setUsuario] =
         useState(null);
 
+    const [torneoId, setTorneoId] =
+        useState("");
+
+    const [equipoId, setEquipoId] =
+        useState("");
+
     const [cargando, setCargando] =
         useState(true);
 
-
-    const [nombreTorneo, setNombreTorneo] =
-        useState("");
-
-    const [tipoParticipante, setTipoParticipante] =
-        useState("");
-
-    const [nombreEquipo, setNombreEquipo] =
-        useState("");
+    const [enviando, setEnviando] =
+        useState(false);
 
     const [mensaje, setMensaje] =
         useState("");
 
+    const [error, setError] =
+        useState("");
+
     const [resumen, setResumen] =
         useState(null);
-
-    const [inscripciones, setInscripciones] =
-        useState([]);
 
 
     useEffect(function () {
@@ -51,9 +48,27 @@ function FormularioInscripcion() {
         obtenerDatosInscripcion()
             .then(function (datos) {
 
-                setTorneos(datos.torneos);
-                setEquipos(datos.equipos);
-                setUsuario(datos.usuario);
+                setUsuario(
+                    datos.usuario
+                );
+
+                setTorneos(
+                    datos.torneos
+                );
+
+                setEquipos(
+                    datos.equipos
+                );
+
+            })
+            .catch(function (error) {
+
+                setError(
+                    error.message
+                );
+
+            })
+            .finally(function () {
 
                 setCargando(false);
 
@@ -63,42 +78,81 @@ function FormularioInscripcion() {
 
 
     const torneoSeleccionado =
-        torneos.find(function (torneo) {
+        useMemo(function () {
 
-            return torneo.nombre === nombreTorneo;
+            return torneos.find(
+                function (torneo) {
 
-        });
+                    return (
+                        torneo.id ===
+                        Number(torneoId)
+                    );
 
+                }
+            );
 
-    const equipoSeleccionado =
-        equipos.find(function (equipo) {
-
-            return equipo.nombre === nombreEquipo;
-
-        });
-
-
-    const equipoIncompleto =
-        tipoParticipante === "equipo" &&
-        torneoSeleccionado &&
-        equipoSeleccionado &&
-        !equipoCompleto(
-            equipoSeleccionado,
-            torneoSeleccionado.integrantesPorEquipo
-        );
+        }, [
+            torneos,
+            torneoId
+        ]);
 
 
-    function realizarInscripcion(event) {
+    const equiposDisponibles =
+        useMemo(function () {
+
+            if (!torneoSeleccionado) {
+                return [];
+            }
+
+
+            return equipos.filter(
+                function (equipo) {
+
+                    return (
+                        equipo.estado === "ACTIVO" &&
+                        equipo.juegoPrincipalId ===
+                        torneoSeleccionado.juegoId
+                    );
+
+                }
+            );
+
+        }, [
+            equipos,
+            torneoSeleccionado
+        ]);
+
+
+    function obtenerModalidadVisual(
+        modalidad
+    ) {
+
+        if (modalidad === "EQUIPO") {
+            return "Por equipos";
+        }
+
+        if (modalidad === "JUGADOR") {
+            return "Individual";
+        }
+
+        return modalidad;
+    }
+
+
+    async function realizarInscripcion(
+        event
+    ) {
 
         event.preventDefault();
 
         setMensaje("");
+        setError("");
         setResumen(null);
 
 
-        if (nombreTorneo === "") {
+        if (!torneoSeleccionado) {
 
-            setMensaje(
+            setError(
                 "Debes seleccionar un torneo."
             );
 
@@ -106,79 +160,28 @@ function FormularioInscripcion() {
         }
 
 
-        if (tipoParticipante === "") {
+        if (!usuario) {
 
-            setMensaje(
-                "Debes seleccionar un tipo de participante."
+            setError(
+                "No se pudo identificar al usuario autenticado."
             );
 
             return;
         }
 
 
-        if (
-            torneoSeleccionado.modalidad === "Por equipos" &&
-            tipoParticipante !== "equipo"
-        ) {
-
-            setMensaje(
-                "Este torneo solo permite inscripciones por equipo."
-            );
-
-            return;
-        }
+        const tipoParticipante =
+            torneoSeleccionado.modalidad;
 
 
-        if (
-            torneoSeleccionado.modalidad === "Individual" &&
-            tipoParticipante !== "jugador"
-        ) {
-
-            setMensaje(
-                "Este torneo solo permite inscripciones individuales."
-            );
-
-            return;
-        }
+        let payload;
 
 
-        if (
-            cuposDisponibles(
-                torneoSeleccionado.cupoMaximo,
-                torneoSeleccionado.inscritos
-            ) === 0
-        ) {
+        if (tipoParticipante === "EQUIPO") {
 
-            setMensaje(
-                "No es posible inscribirse: el torneo no tiene cupos disponibles."
-            );
+            if (equipoId === "") {
 
-            return;
-        }
-
-
-        if (
-            inscripcionFueraDePlazo(
-                torneoSeleccionado.cierreInscripcion
-            )
-        ) {
-
-            setMensaje(
-                "No es posible inscribirse: el plazo de inscripción ya finalizó."
-            );
-
-            return;
-        }
-
-
-        let participante;
-
-
-        if (tipoParticipante === "equipo") {
-
-            if (nombreEquipo === "") {
-
-                setMensaje(
+                setError(
                     "Debes seleccionar un equipo."
                 );
 
@@ -186,136 +189,103 @@ function FormularioInscripcion() {
             }
 
 
-            if (equipoSeleccionado.estado === "Inactivo") {
+            payload = {
 
-                setMensaje(
-                    "El equipo no puede inscribirse porque se encuentra inactivo."
-                );
+                torneoId:
+                    torneoSeleccionado.id,
 
-                return;
-            }
+                equipoId:
+                    Number(equipoId),
 
+                jugadorId:
+                    null,
 
-            if (
-                tieneSancionActiva(
-                    equipoSeleccionado
-                )
-            ) {
+                tipoParticipante:
+                    "EQUIPO"
 
-                setMensaje(
-                    "El equipo no puede inscribirse porque tiene una sanción vigente."
-                );
-
-                return;
-            }
-
-
-            if (
-                !equipoCompleto(
-                    equipoSeleccionado,
-                    torneoSeleccionado.integrantesPorEquipo
-                )
-            ) {
-
-                setMensaje(
-                    "El equipo no tiene suficientes integrantes para este torneo."
-                );
-
-                return;
-            }
-
-
-            participante =
-                equipoSeleccionado.nombre;
+            };
 
         } else {
 
-            if (
-                tieneSancionActiva(usuario)
-            ) {
+            payload = {
 
-                setMensaje(
-                    "No puedes inscribirte porque tienes una sanción vigente."
-                );
+                torneoId:
+                    torneoSeleccionado.id,
 
-                return;
-            }
+                equipoId:
+                    null,
 
+                jugadorId:
+                    usuario.id,
 
-            participante =
-                usuario.apodo;
+                tipoParticipante:
+                    "JUGADOR"
+
+            };
         }
 
 
-        const yaInscrito =
-            inscripciones.some(
-                function (inscripcion) {
+        setEnviando(true);
 
-                    return (
-                        inscripcion.torneo ===
-                            torneoSeleccionado.nombre &&
-                        inscripcion.participante ===
-                            participante
-                    );
 
-                }
+        try {
+
+            const inscripcion =
+                await crearInscripcion(
+                    payload
+                );
+
+
+            const equipo =
+                equipos.find(
+                    function (item) {
+
+                        return (
+                            item.id ===
+                            Number(equipoId)
+                        );
+
+                    }
+                );
+
+
+            setResumen({
+
+                torneo:
+                    torneoSeleccionado.nombre,
+
+                participante:
+                    tipoParticipante === "EQUIPO"
+                        ? equipo?.nombre
+                        : usuario.nickname,
+
+                modalidad:
+                    obtenerModalidadVisual(
+                        tipoParticipante
+                    ),
+
+                estado:
+                    inscripcion.estado
+
+            });
+
+
+            setMensaje(
+                "Inscripción realizada correctamente."
             );
 
 
-        if (yaInscrito) {
+        } catch (error) {
 
-            if (tipoParticipante === "equipo") {
+            setError(
+                error.message
+            );
 
-                setMensaje(
-                    "Este equipo ya se encuentra inscrito en este torneo."
-                );
+        } finally {
 
-            } else {
+            setEnviando(false);
 
-                setMensaje(
-                    "Este jugador ya se encuentra inscrito en este torneo."
-                );
-
-            }
-
-            return;
         }
-
-
-        setInscripciones(
-            function (anteriores) {
-
-                return [
-                    ...anteriores,
-                    {
-                        torneo:
-                            torneoSeleccionado.nombre,
-
-                        participante:
-                            participante,
-
-                        tipo:
-                            tipoParticipante
-                    }
-                ];
-
-            }
-        );
-
-
-        setResumen({
-            torneo:
-                torneoSeleccionado.nombre,
-
-            participante:
-                participante,
-
-            modalidad:
-                torneoSeleccionado.modalidad
-        });
-
-
-        setMensaje("");
     }
 
 
@@ -336,11 +306,11 @@ function FormularioInscripcion() {
             </section>
 
         );
-
     }
 
 
     return (
+
         <>
 
             <section className="card mb-4">
@@ -351,14 +321,18 @@ function FormularioInscripcion() {
                         Inscripción a torneo
                     </h2>
 
+
                     <p className="card-text">
-                        Completa los datos para registrar
-                        tu participación en un torneo.
+                        Selecciona un torneo para registrar
+                        tu participación.
                     </p>
 
 
-                    <form onSubmit={realizarInscripcion}>
-
+                    <form
+                        onSubmit={
+                            realizarInscripcion
+                        }
+                    >
 
                         <div className="mb-3">
 
@@ -373,20 +347,21 @@ function FormularioInscripcion() {
                             <select
                                 id="torneo"
                                 className="form-select"
-                                value={nombreTorneo}
-                                onChange={function (event) {
+                                value={torneoId}
+                                onChange={
+                                    function (event) {
 
-                                    setNombreTorneo(
-                                        event.target.value
-                                    );
+                                        setTorneoId(
+                                            event.target.value
+                                        );
 
-                                    setNombreEquipo("");
+                                        setEquipoId("");
+                                        setMensaje("");
+                                        setError("");
+                                        setResumen(null);
 
-                                    setMensaje("");
-
-                                    setResumen(null);
-
-                                }}
+                                    }
+                                }
                             >
 
                                 <option value="">
@@ -400,8 +375,8 @@ function FormularioInscripcion() {
                                         return (
 
                                             <option
-                                                key={torneo.nombre}
-                                                value={torneo.nombre}
+                                                key={torneo.id}
+                                                value={torneo.id}
                                             >
                                                 {torneo.nombre}
                                             </option>
@@ -416,145 +391,147 @@ function FormularioInscripcion() {
                         </div>
 
 
-                        <fieldset className="mb-3">
+                        {torneoSeleccionado && (
 
-                            <legend className="fs-6">
-                                Tipo de participante
-                            </legend>
+                            <div
+                                className="
+                                    alert
+                                    alert-secondary
+                                "
+                            >
 
+                                <strong>
+                                    Modalidad:
+                                </strong>{" "}
+                                {
+                                    obtenerModalidadVisual(
+                                        torneoSeleccionado.modalidad
+                                    )
+                                }
 
-                            <div className="form-check form-check-inline">
+                                <br />
 
-                                <input
-                                    className="form-check-input"
-                                    type="radio"
-                                    id="jugador"
-                                    name="tipo-participante"
-                                    value="jugador"
-                                    checked={
-                                        tipoParticipante ===
-                                        "jugador"
-                                    }
-                                    onChange={function (event) {
-
-                                        setTipoParticipante(
-                                            event.target.value
-                                        );
-
-                                        setNombreEquipo("");
-
-                                        setMensaje("");
-
-                                        setResumen(null);
-
-                                    }}
-                                />
-
-
-                                <label
-                                    className="form-check-label"
-                                    htmlFor="jugador"
-                                >
-                                    Jugador
-                                </label>
-
-                            </div>
-
-
-                            <div className="form-check form-check-inline">
-
-                                <input
-                                    className="form-check-input"
-                                    type="radio"
-                                    id="equipo"
-                                    name="tipo-participante"
-                                    value="equipo"
-                                    checked={
-                                        tipoParticipante ===
-                                        "equipo"
-                                    }
-                                    onChange={function (event) {
-
-                                        setTipoParticipante(
-                                            event.target.value
-                                        );
-
-                                        setMensaje("");
-
-                                        setResumen(null);
-
-                                    }}
-                                />
-
-
-                                <label
-                                    className="form-check-label"
-                                    htmlFor="equipo"
-                                >
-                                    Equipo
-                                </label>
-
-                            </div>
-
-                        </fieldset>
-
-
-                        {tipoParticipante === "equipo" && (
-
-                            <div className="mb-3">
-
-                                <label
-                                    htmlFor="equipo-seleccionado"
-                                    className="form-label"
-                                >
-                                    Equipo:
-                                </label>
-
-
-                                <select
-                                    id="equipo-seleccionado"
-                                    className="form-select"
-                                    value={nombreEquipo}
-                                    onChange={function (event) {
-
-                                        setNombreEquipo(
-                                            event.target.value
-                                        );
-
-                                        setMensaje("");
-
-                                        setResumen(null);
-
-                                    }}
-                                >
-
-                                    <option value="">
-                                        Selecciona un equipo
-                                    </option>
-
-
-                                    {equipos.map(
-                                        function (equipo) {
-
-                                            return (
-
-                                                <option
-                                                    key={equipo.nombre}
-                                                    value={equipo.nombre}
-                                                >
-                                                    {equipo.nombre}
-                                                </option>
-
-                                            );
-
-                                        }
-                                    )}
-
-                                </select>
+                                <strong>
+                                    Cierre de inscripción:
+                                </strong>{" "}
+                                {
+                                    torneoSeleccionado.cierreInscripcion
+                                }
 
                             </div>
 
                         )}
+
+
+                        {
+                            torneoSeleccionado?.modalidad ===
+                            "EQUIPO" && (
+
+                                <div className="mb-3">
+
+                                    <label
+                                        htmlFor="equipo-seleccionado"
+                                        className="form-label"
+                                    >
+                                        Equipo:
+                                    </label>
+
+
+                                    <select
+                                        id="equipo-seleccionado"
+                                        className="form-select"
+                                        value={equipoId}
+                                        onChange={
+                                            function (event) {
+
+                                                setEquipoId(
+                                                    event.target.value
+                                                );
+
+                                                setMensaje("");
+                                                setError("");
+                                                setResumen(null);
+
+                                            }
+                                        }
+                                    >
+
+                                        <option value="">
+                                            Selecciona un equipo
+                                        </option>
+
+
+                                        {
+                                            equiposDisponibles.map(
+                                                function (equipo) {
+
+                                                    return (
+
+                                                        <option
+                                                            key={equipo.id}
+                                                            value={equipo.id}
+                                                        >
+                                                            {equipo.nombre}
+                                                        </option>
+
+                                                    );
+
+                                                }
+                                            )
+                                        }
+
+                                    </select>
+
+
+                                    {
+                                        equiposDisponibles.length === 0 && (
+
+                                            <div
+                                                className="
+                                                    alert
+                                                    alert-warning
+                                                    mt-3
+                                                    mb-0
+                                                "
+                                            >
+                                                No tienes un equipo activo
+                                                compatible con el juego
+                                                de este torneo.
+                                            </div>
+
+                                        )
+                                    }
+
+                                </div>
+
+                            )
+                        }
+
+
+                        {
+                            torneoSeleccionado?.modalidad ===
+                            "JUGADOR" && usuario && (
+
+                                <div className="mb-3">
+
+                                    <label
+                                        className="form-label"
+                                    >
+                                        Participante:
+                                    </label>
+
+
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={usuario.nickname}
+                                        disabled
+                                    />
+
+                                </div>
+
+                            )
+                        }
 
 
                         <div className="card bg-light mb-3">
@@ -562,13 +539,15 @@ function FormularioInscripcion() {
                             <div className="card-body">
 
                                 <h3 className="h5">
-                                    Requisitos del torneo
+                                    Validaciones realizadas
+                                    por el sistema
                                 </h3>
+
 
                                 <ul className="mb-0">
 
                                     <li>
-                                        Inscripción dentro del plazo.
+                                        Plazo de inscripción vigente.
                                     </li>
 
                                     <li>
@@ -576,11 +555,15 @@ function FormularioInscripcion() {
                                     </li>
 
                                     <li>
-                                        Equipo con integrantes suficientes.
+                                        Modalidad correcta.
                                     </li>
 
                                     <li>
-                                        Participante sin sanciones vigentes.
+                                        Equipo completo y del juego correcto.
+                                    </li>
+
+                                    <li>
+                                        Participante sin sanciones activas.
                                     </li>
 
                                     <li>
@@ -594,14 +577,13 @@ function FormularioInscripcion() {
                         </div>
 
 
-                        {equipoIncompleto && (
+                        {error && (
 
                             <div
-                                className="alert alert-warning"
+                                className="alert alert-danger"
                                 role="alert"
                             >
-                                El equipo seleccionado
-                                no tiene suficientes integrantes.
+                                {error}
                             </div>
 
                         )}
@@ -610,7 +592,7 @@ function FormularioInscripcion() {
                         {mensaje && (
 
                             <div
-                                className="alert alert-danger"
+                                className="alert alert-success"
                                 role="alert"
                             >
                                 {mensaje}
@@ -622,9 +604,23 @@ function FormularioInscripcion() {
                         <button
                             type="submit"
                             className="btn btn-primary"
-                            disabled={equipoIncompleto}
+                            disabled={
+                                enviando ||
+                                !torneoSeleccionado ||
+                                (
+                                    torneoSeleccionado?.modalidad ===
+                                    "EQUIPO" &&
+                                    equipoId === ""
+                                )
+                            }
                         >
-                            Inscribirse
+
+                            {
+                                enviando
+                                    ? "Inscribiendo..."
+                                    : "Inscribirse"
+                            }
+
                         </button>
 
                     </form>
@@ -646,24 +642,40 @@ function FormularioInscripcion() {
                     {resumen ? (
 
                         <div
-                            className="alert alert-success mb-0"
-                            role="alert"
+                            className="
+                                alert
+                                alert-success
+                                mb-0
+                            "
                         >
 
                             <h3 className="h5">
-                                Inscripción realizada correctamente
+                                Inscripción realizada
+                                correctamente
                             </h3>
 
-                            <p>
-                                Torneo: {resumen.torneo}
-                            </p>
 
                             <p>
-                                Participante: {resumen.participante}
+                                Torneo:{" "}
+                                {resumen.torneo}
                             </p>
+
+
+                            <p>
+                                Participante:{" "}
+                                {resumen.participante}
+                            </p>
+
+
+                            <p>
+                                Modalidad:{" "}
+                                {resumen.modalidad}
+                            </p>
+
 
                             <p className="mb-0">
-                                Modalidad: {resumen.modalidad}
+                                Estado:{" "}
+                                {resumen.estado}
                             </p>
 
                         </div>
@@ -671,7 +683,8 @@ function FormularioInscripcion() {
                     ) : (
 
                         <p className="mb-0">
-                            Aún no se ha realizado una inscripción.
+                            Aún no se ha realizado
+                            una inscripción.
                         </p>
 
                     )}
@@ -681,6 +694,7 @@ function FormularioInscripcion() {
             </section>
 
         </>
+
     );
 }
 
