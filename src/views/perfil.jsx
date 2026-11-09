@@ -19,6 +19,9 @@ function Perfil() {
     const [cargando, setCargando] =
         useState(true);
 
+    const [error, setError] =
+        useState("");
+
 
     useEffect(function () {
 
@@ -28,6 +31,14 @@ function Perfil() {
                 setUsuario(datos.usuario);
 
                 setPerfil(datos.perfil);
+
+            })
+            .catch(function (error) {
+
+                setError(error.message);
+
+            })
+            .finally(function () {
 
                 setCargando(false);
 
@@ -47,6 +58,30 @@ function Perfil() {
                     <p>
                         Cargando perfil del jugador...
                     </p>
+
+                </section>
+
+            </main>
+
+        );
+
+    }
+
+
+    if (error) {
+
+        return (
+
+            <main className="container py-4">
+
+                <section>
+
+                    <div
+                        className="alert alert-danger"
+                        role="alert"
+                    >
+                        {error}
+                    </div>
 
                 </section>
 
