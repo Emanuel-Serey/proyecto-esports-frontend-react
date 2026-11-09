@@ -1,152 +1,241 @@
 import {
-    equiposUsuario,
-    jugadoresDisponibles
-} from "../data/datos.js";
+    API_URL,
+    obtenerHeadersAutenticados
+} from "./authService.js";
 
 
-export function obtenerDatosEquipo() {
+async function procesarRespuesta(response) {
 
-    return Promise.resolve({
-        equipos: equiposUsuario,
-        jugadores: jugadoresDisponibles
-    });
+    let data = null;
 
-}
-
-
-export function crearEquipo(nuevoEquipo) {
-
-    const existeEquipo =
-        equiposUsuario.some(function (equipo) {
-
-            return (
-                equipo.nombre.toLowerCase() ===
-                nuevoEquipo.nombre.toLowerCase()
-            );
-
-        });
-
-
-    if (existeEquipo) {
-
-        return Promise.reject(
-            new Error(
-                "Ya existe un equipo con este nombre."
-            )
-        );
-
+    try {
+        data = await response.json();
+    } catch {
+        data = null;
     }
 
+    if (!response.ok) {
 
-    const equipoCreado = {
-        nombre: nuevoEquipo.nombre,
-        juego: nuevoEquipo.juego,
-        capitan: nuevoEquipo.capitan,
-        miembros: nuevoEquipo.miembros || [],
-        integrantes:
-            nuevoEquipo.miembros
-                ? nuevoEquipo.miembros.length
-                : 0,
-        sancionVigente: false,
-        estado: "Activo"
-    };
+        let mensaje =
+            data?.message ||
+            data?.error ||
+            "Ocurrió un error al comunicarse con el servidor.";
 
+        if (response.status === 401) {
+            mensaje =
+                "Tu sesión ha expirado. Inicia sesión nuevamente.";
+        }
 
-    equiposUsuario.push(equipoCreado);
+        if (response.status === 403) {
+            mensaje =
+                "No tienes permisos para realizar esta acción.";
+        }
 
+        if (response.status === 404) {
+            mensaje =
+                data?.message ||
+                data?.error ||
+                "No se encontró el recurso solicitado.";
+        }
 
-    return Promise.resolve(equipoCreado);
+        if (response.status === 409) {
+            mensaje =
+                data?.message ||
+                data?.error ||
+                "La operación genera un conflicto.";
+        }
 
+        if (response.status === 422) {
+            mensaje =
+                data?.message ||
+                data?.error ||
+                "No se cumple una regla de negocio.";
+        }
+
+        throw new Error(mensaje);
+    }
+
+    return data;
 }
 
 
-export function actualizarEquipo(
-    nombreEquipo,
-    cambios
+export async function obtenerDatosEquipo() {
+
+    const headers =
+        obtenerHeadersAutenticados();
+
+    const [
+        respuestaPerfil,
+        respuestaJugadores,
+        respuestaJuegos
+    ] = await Promise.all([
+
+        fetch(
+            `${API_URL}/api/usuarios/me`,
+            {
+                method: "GET",
+                headers
+            }
+        ),
+
+        fetch(
+            `${API_URL}/api/usuarios/rol/JUGADOR`,
+            {
+                method: "GET",
+                headers
+            }
+        ),
+
+        fetch(
+            `${API_URL}/api/juegos/activos`
+        )
+
+    ]);
+
+
+    const usuario =
+        await procesarRespuesta(
+            respuestaPerfil
+        );
+
+    const jugadores =
+        await procesarRespuesta(
+            respuestaJugadores
+        );
+
+    const juegos =
+        await procesarRespuesta(
+            respuestaJuegos
+        );
+
+
+    const respuestaEquipos =
+        await fetch(
+            `${API_URL}/api/equipos/capitan/${usuario.id}`,
+            {
+                method: "GET",
+                headers
+            }
+        );
+
+
+    const equipos =
+        await procesarRespuesta(
+            respuestaEquipos
+        );
+
+
+    return {
+        usuario,
+        jugadores,
+        juegos,
+        equipos
+    };
+}
+
+
+export async function crearEquipo(
+    nuevoEquipo
 ) {
 
-    const indice =
-        equiposUsuario.findIndex(
-            function (equipo) {
+    const response =
+        await fetch(
+            `${API_URL}/api/equipos`,
+            {
+                method: "POST",
+                headers:
+                    obtenerHeadersAutenticados(),
 
-                return (
-                    equipo.nombre === nombreEquipo
-                );
-
+                body: JSON.stringify(
+                    nuevoEquipo
+                )
             }
         );
 
 
-    if (indice === -1) {
-
-        return Promise.reject(
-            new Error(
-                "No se encontró el equipo."
-            )
-        );
-
-    }
-
-
-    equiposUsuario[indice] = {
-        ...equiposUsuario[indice],
-        ...cambios
-    };
-
-
-    return Promise.resolve(
-        equiposUsuario[indice]
-    );
-
+    return procesarRespuesta(response);
 }
 
 
-export function eliminarEquipo(nombreEquipo) {
+export async function agregarMiembro(
+    equipoId,
+    miembro
+) {
 
-    const indice =
-        equiposUsuario.findIndex(
-            function (equipo) {
+    const response =
+        await fetch(
+            `${API_URL}/api/equipos/${equipoId}/miembros`,
+            {
+                method: "POST",
+                headers:
+                    obtenerHeadersAutenticados(),
 
-                return (
-                    equipo.nombre === nombreEquipo
-                );
-
+                body: JSON.stringify(
+                    miembro
+                )
             }
         );
 
 
-    if (indice === -1) {
-
-        return Promise.reject(
-            new Error(
-                "No se encontró el equipo."
-            )
-        );
-
-    }
-
-
-    const equipoEliminado =
-        equiposUsuario.splice(
-            indice,
-            1
-        )[0];
-
-
-    return Promise.resolve(
-        equipoEliminado
-    );
-
+    return procesarRespuesta(response);
 }
 
 
-/*
-    Objeto utilizado por los componentes y también permite aplicar spyOn en las pruebas*/
+export async function eliminarMiembro(
+    equipoId,
+    miembroId
+) {
+
+    const response =
+        await fetch(
+            `${API_URL}/api/equipos/${equipoId}/miembros/${miembroId}`,
+            {
+                method: "DELETE",
+                headers:
+                    obtenerHeadersAutenticados()
+            }
+        );
+
+
+    if (!response.ok) {
+        await procesarRespuesta(response);
+    }
+
+
+    return true;
+}
+
+
+export async function eliminarEquipo(
+    equipoId
+) {
+
+    const response =
+        await fetch(
+            `${API_URL}/api/equipos/${equipoId}`,
+            {
+                method: "DELETE",
+                headers:
+                    obtenerHeadersAutenticados()
+            }
+        );
+
+
+    if (!response.ok) {
+        await procesarRespuesta(response);
+    }
+
+
+    return true;
+}
+
+
 export const equiposService = {
 
     obtenerDatosEquipo,
     crearEquipo,
-    actualizarEquipo,
+    agregarMiembro,
+    eliminarMiembro,
     eliminarEquipo
 
 };
