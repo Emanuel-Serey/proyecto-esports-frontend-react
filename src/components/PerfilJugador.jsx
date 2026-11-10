@@ -1,10 +1,63 @@
 import {
+    useMemo,
     useState
 } from "react";
 
 import {
+    Link
+} from "react-router-dom";
+
+import {
     actualizarApodo
 } from "../services/perfilService.js";
+
+
+function obtenerIniciales(
+    apodo,
+    nombre
+) {
+
+    const texto =
+        apodo ||
+        nombre ||
+        "Jugador";
+
+
+    const partes =
+        texto
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean);
+
+
+    if (partes.length === 1) {
+
+        return partes[0]
+            .slice(0, 2)
+            .toUpperCase();
+
+    }
+
+
+    return (
+        partes[0][0] +
+        partes[1][0]
+    ).toUpperCase();
+}
+
+
+function formatearEstado(
+    estado
+) {
+
+    return String(
+        estado || "SIN ESTADO"
+    )
+        .replaceAll(
+            "_",
+            " "
+        );
+}
 
 
 function PerfilJugador({
@@ -12,17 +65,73 @@ function PerfilJugador({
     perfil
 }) {
 
-    const [apodoActual, setApodoActual] =
-        useState(usuario.apodo);
+    const [
+        apodoActual,
+        setApodoActual
+    ] = useState(
+        usuario.apodo
+    );
 
-    const [nuevoApodo, setNuevoApodo] =
-        useState("");
 
-    const [mensaje, setMensaje] =
-        useState("");
+    const [
+        nuevoApodo,
+        setNuevoApodo
+    ] = useState("");
 
-    const [guardando, setGuardando] =
-        useState(false);
+
+    const [
+        mensaje,
+        setMensaje
+    ] = useState("");
+
+
+    const [
+        guardando,
+        setGuardando
+    ] = useState(false);
+
+
+    const victorias =
+        perfil.estadisticas
+            .victorias || 0;
+
+
+    const derrotas =
+        perfil.estadisticas
+            .derrotas || 0;
+
+
+    const partidasJugadas =
+        victorias +
+        derrotas;
+
+
+    const porcentajeVictorias =
+        partidasJugadas > 0
+            ? Math.round(
+                (
+                    victorias /
+                    partidasJugadas
+                ) * 100
+            )
+            : 0;
+
+
+    const iniciales =
+        useMemo(
+            function () {
+
+                return obtenerIniciales(
+                    apodoActual,
+                    usuario.nombre
+                );
+
+            },
+            [
+                apodoActual,
+                usuario.nombre
+            ]
+        );
 
 
     async function cambiarApodo(
@@ -61,7 +170,9 @@ function PerfilJugador({
         }
 
 
-        if (apodo.includes(" ")) {
+        if (
+            apodo.includes(" ")
+        ) {
 
             setMensaje(
                 "El apodo no puede contener espacios."
@@ -71,7 +182,9 @@ function PerfilJugador({
         }
 
 
-        setGuardando(true);
+        setGuardando(
+            true
+        );
 
 
         try {
@@ -86,7 +199,9 @@ function PerfilJugador({
                 usuarioActualizado.nickname
             );
 
+
             setNuevoApodo("");
+
 
             setMensaje(
                 "Apodo actualizado correctamente."
@@ -102,7 +217,9 @@ function PerfilJugador({
 
         } finally {
 
-            setGuardando(false);
+            setGuardando(
+                false
+            );
 
         }
     }
@@ -112,515 +229,832 @@ function PerfilJugador({
 
         <>
 
-            <section className="card mb-4">
 
-                <div className="card-body">
+            {/* =========================
+                CABECERA PERFIL
+            ========================= */}
 
-                    <h2 className="card-title mb-3">
-                        Perfil del jugador
-                    </h2>
+            <section className="perfil-hero">
+
+                <div className="perfil-hero-fondo" />
 
 
-                    <div className="mb-4">
+                <div className="perfil-identidad">
 
-                        <p>
-                            <strong>
-                                Nombre:
-                            </strong>{" "}
+
+                    <div className="perfil-avatar">
+
+                        <span>
+                            {iniciales}
+                        </span>
+
+                        <div className="perfil-avatar-estado" />
+
+                    </div>
+
+
+                    <div className="perfil-identidad-texto">
+
+                        <span className="perfil-etiqueta">
+                            PERFIL DE JUGADOR
+                        </span>
+
+
+                        <h1>
+                            {apodoActual}
+                        </h1>
+
+
+                        <p className="perfil-nombre">
                             {usuario.nombre}
                         </p>
 
 
-                        <p>
-                            <strong>
-                                Apodo:
-                            </strong>{" "}
-                            {apodoActual}
-                        </p>
+                        <div className="perfil-datos-usuario">
 
+                            <span>
+                                JUGADOR
+                            </span>
 
-                        <p>
-                            <strong>
-                                Correo:
-                            </strong>{" "}
-                            {usuario.correo}
-                        </p>
+                            <span>
+                                {usuario.correo}
+                            </span>
+
+                        </div>
 
                     </div>
 
+                </div>
 
-                    <form
-                        onSubmit={
-                            cambiarApodo
-                        }
+
+                <div className="perfil-hero-acciones">
+
+                    <Link
+                        to="/torneos"
+                        className="btn btn-primary"
                     >
-
-                        <div
-                            className="
-                                row
-                                g-3
-                                align-items-end
-                            "
-                        >
-
-                            <div className="col-12 col-md-8">
-
-                                <label
-                                    htmlFor="nuevo-apodo"
-                                    className="form-label"
-                                >
-                                    Cambiar apodo:
-                                </label>
+                        Buscar torneos
+                    </Link>
 
 
-                                <input
-                                    id="nuevo-apodo"
-                                    type="text"
-                                    className="form-control"
-                                    value={nuevoApodo}
-                                    placeholder={
-                                        `Ej: ${apodoActual}`
-                                    }
-                                    autoComplete="off"
-                                    disabled={
-                                        guardando
-                                    }
-                                    onChange={
-                                        function (event) {
+                    <Link
+                        to="/equipo"
+                        className="btn btn-outline-primary"
+                    >
+                        Mis equipos
+                    </Link>
 
-                                            setNuevoApodo(
-                                                event.target.value
-                                            );
+                </div>
 
-                                            setMensaje("");
+            </section>
 
-                                        }
-                                    }
-                                />
+
+            {/* =========================
+                ESTADÍSTICAS
+            ========================= */}
+
+            <section className="perfil-estadisticas">
+
+
+                <article>
+
+                    <span className="perfil-stat-etiqueta">
+                        VICTORIAS
+                    </span>
+
+                    <strong>
+                        {victorias}
+                    </strong>
+
+                    <small>
+                        Partidas ganadas
+                    </small>
+
+                </article>
+
+
+                <article>
+
+                    <span className="perfil-stat-etiqueta">
+                        DERROTAS
+                    </span>
+
+                    <strong>
+                        {derrotas}
+                    </strong>
+
+                    <small>
+                        Partidas perdidas
+                    </small>
+
+                </article>
+
+
+                <article>
+
+                    <span className="perfil-stat-etiqueta">
+                        WIN RATE
+                    </span>
+
+                    <strong>
+                        {porcentajeVictorias}%
+                    </strong>
+
+                    <small>
+                        Porcentaje de victorias
+                    </small>
+
+                </article>
+
+
+                <article>
+
+                    <span className="perfil-stat-etiqueta">
+                        TORNEOS
+                    </span>
+
+                    <strong>
+                        {
+                            perfil
+                                .historialTorneos
+                                .length
+                        }
+                    </strong>
+
+                    <small>
+                        Participaciones
+                    </small>
+
+                </article>
+
+            </section>
+
+
+            <div className="perfil-layout">
+
+
+                <div className="perfil-contenido">
+
+
+                    {/* =========================
+                        EQUIPOS
+                    ========================= */}
+
+                    <section className="perfil-seccion">
+
+                        <div className="perfil-seccion-cabecera">
+
+                            <div>
+
+                                <span className="seccion-etiqueta">
+                                    ESCUADRAS
+                                </span>
+
+                                <h2>
+                                    Mis equipos
+                                </h2>
+
+                                <p>
+                                    Equipos en los que
+                                    participas actualmente.
+                                </p>
 
                             </div>
 
 
-                            <div className="col-12 col-md-4">
-
-                                <button
-                                    type="submit"
-                                    className="
-                                        btn
-                                        btn-primary
-                                        w-100
-                                    "
-                                    disabled={
-                                        guardando
-                                    }
-                                >
-
-                                    {
-                                        guardando
-                                            ? "Guardando..."
-                                            : "Guardar"
-                                    }
-
-                                </button>
-
-                            </div>
+                            <Link
+                                to="/equipo"
+                                className="perfil-enlace"
+                            >
+                                Gestionar equipos →
+                            </Link>
 
                         </div>
 
-                    </form>
+
+                        {
+                            perfil.equipos.length ===
+                            0
+                                ? (
+
+                                    <div className="perfil-vacio">
+
+                                        <div>
+                                            ◈
+                                        </div>
+
+                                        <h3>
+                                            Aún no tienes equipo
+                                        </h3>
+
+                                        <p>
+                                            Crea una escuadra
+                                            o únete a una para
+                                            comenzar a competir.
+                                        </p>
 
 
-                    {mensaje && (
+                                        <Link
+                                            to="/equipo"
+                                            className="btn btn-primary"
+                                        >
+                                            Crear equipo
+                                        </Link>
 
-                        <div
-                            className={
-                                mensaje.includes(
-                                    "correctamente"
+                                    </div>
+
                                 )
-                                    ? "alert alert-success mt-3 mb-0"
-                                    : "alert alert-danger mt-3 mb-0"
-                            }
-                            role="alert"
-                        >
-                            {mensaje}
+                                : (
+
+                                    <div className="perfil-equipos-grid">
+
+                                        {
+                                            perfil.equipos.map(
+                                                function (
+                                                    equipo
+                                                ) {
+
+                                                    return (
+
+                                                        <article
+                                                            className="perfil-equipo-card"
+                                                            key={
+                                                                equipo.id
+                                                            }
+                                                        >
+
+                                                            <div className="perfil-equipo-icono">
+                                                                {
+                                                                    equipo
+                                                                        .nombre
+                                                                        .charAt(0)
+                                                                        .toUpperCase()
+                                                                }
+                                                            </div>
+
+
+                                                            <div className="perfil-equipo-info">
+
+                                                                <span>
+                                                                    EQUIPO
+                                                                </span>
+
+
+                                                                <h3>
+                                                                    {
+                                                                        equipo.nombre
+                                                                    }
+                                                                </h3>
+
+
+                                                                <div>
+
+                                                                    <span
+                                                                        className={
+                                                                            `perfil-badge ${
+                                                                                equipo.estado ===
+                                                                                "ACTIVO"
+                                                                                    ? "activo"
+                                                                                    : ""
+                                                                            }`
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            formatearEstado(
+                                                                                equipo.estado
+                                                                            )
+                                                                        }
+                                                                    </span>
+
+
+                                                                    {
+                                                                        equipo.esCapitan && (
+
+                                                                            <span className="perfil-badge capitan">
+                                                                                CAPITÁN
+                                                                            </span>
+
+                                                                        )
+                                                                    }
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        </article>
+
+                                                    );
+
+                                                }
+                                            )
+                                        }
+
+                                    </div>
+
+                                )
+                        }
+
+                    </section>
+
+
+                    {/* =========================
+                        HISTORIAL
+                    ========================= */}
+
+                    <section className="perfil-seccion">
+
+                        <div className="perfil-seccion-cabecera">
+
+                            <div>
+
+                                <span className="seccion-etiqueta">
+                                    COMPETICIONES
+                                </span>
+
+                                <h2>
+                                    Historial de torneos
+                                </h2>
+
+                                <p>
+                                    Tus participaciones
+                                    más recientes.
+                                </p>
+
+                            </div>
+
                         </div>
 
-                    )}
 
-                </div>
+                        {
+                            perfil
+                                .historialTorneos
+                                .length === 0
+                                ? (
 
-            </section>
+                                    <div className="perfil-vacio">
+
+                                        <div>
+                                            ◇
+                                        </div>
+
+                                        <h3>
+                                            Sin participaciones todavía
+                                        </h3>
+
+                                        <p>
+                                            Explora los torneos
+                                            disponibles y entra
+                                            a la competición.
+                                        </p>
 
 
-            <section className="mb-4">
+                                        <Link
+                                            to="/torneos"
+                                            className="btn btn-primary"
+                                        >
+                                            Explorar torneos
+                                        </Link>
 
-                <h2 className="mb-3">
-                    Mis equipos
-                </h2>
+                                    </div>
 
+                                )
+                                : (
 
-                {
-                    perfil.equipos.length === 0
-                        ? (
+                                    <div className="perfil-historial">
 
-                            <div
-                                className="
-                                    alert
-                                    alert-secondary
-                                "
-                            >
-                                No perteneces a ningún equipo.
-                            </div>
+                                        {
+                                            perfil
+                                                .historialTorneos
+                                                .map(
+                                                    function (
+                                                        torneo,
+                                                        indice
+                                                    ) {
 
-                        )
-                        : (
+                                                        return (
 
-                            <div className="row g-3">
-
-                                {
-                                    perfil.equipos.map(
-                                        function (equipo) {
-
-                                            return (
-
-                                                <div
-                                                    className="
-                                                        col-12
-                                                        col-md-6
-                                                        col-lg-4
-                                                    "
-                                                    key={equipo.id}
-                                                >
-
-                                                    <article
-                                                        className="
-                                                            card
-                                                            h-100
-                                                        "
-                                                    >
-
-                                                        <div className="card-body">
-
-                                                            <h3
-                                                                className="
-                                                                    h5
-                                                                    card-title
-                                                                "
+                                                            <article
+                                                                className="perfil-torneo-item"
+                                                                key={
+                                                                    `${torneo.torneo}-${indice}`
+                                                                }
                                                             >
-                                                                {
-                                                                    equipo.nombre
-                                                                }
-                                                            </h3>
+
+                                                                <div className="perfil-torneo-numero">
+
+                                                                    {
+                                                                        String(
+                                                                            indice + 1
+                                                                        )
+                                                                            .padStart(
+                                                                                2,
+                                                                                "0"
+                                                                            )
+                                                                    }
+
+                                                                </div>
 
 
-                                                            <p className="mb-1">
+                                                                <div className="perfil-torneo-info">
 
-                                                                Estado:{" "}
-                                                                {
-                                                                    equipo.estado
-                                                                }
-
-                                                            </p>
-
-
-                                                            {
-                                                                equipo.esCapitan && (
-
-                                                                    <p className="mb-0">
-
-                                                                        <strong>
-                                                                            Capitán
-                                                                        </strong>
-
-                                                                    </p>
-
-                                                                )
-                                                            }
-
-                                                        </div>
-
-                                                    </article>
-
-                                                </div>
-
-                                            );
-
-                                        }
-                                    )
-                                }
-
-                            </div>
-
-                        )
-                }
-
-            </section>
+                                                                    <span>
+                                                                        {
+                                                                            torneo.juego
+                                                                        }
+                                                                    </span>
 
 
-            <section className="mb-4">
+                                                                    <h3>
+                                                                        {
+                                                                            torneo.torneo
+                                                                        }
+                                                                    </h3>
 
-                <h2 className="mb-3">
-                    Historial de torneos
-                </h2>
+                                                                </div>
 
 
-                {
-                    perfil.historialTorneos.length === 0
-                        ? (
+                                                                <div className="perfil-torneo-resultado">
 
-                            <div
-                                className="
-                                    alert
-                                    alert-secondary
-                                "
-                            >
-                                Aún no tienes participaciones
-                                registradas.
-                            </div>
+                                                                    <span>
+                                                                        RESULTADO
+                                                                    </span>
 
-                        )
-                        : (
+                                                                    <strong>
+                                                                        {
+                                                                            torneo.resultado
+                                                                        }
+                                                                    </strong>
 
-                            <div className="row g-3">
+                                                                </div>
 
-                                {
-                                    perfil.historialTorneos.map(
-                                        function (
-                                            torneo,
-                                            indice
-                                        ) {
 
-                                            return (
+                                                                <div>
 
-                                                <div
-                                                    className="
-                                                        col-12
-                                                        col-md-6
-                                                    "
-                                                    key={
-                                                        `${torneo.torneo}-${indice}`
+                                                                    <span
+                                                                        className="perfil-badge"
+                                                                    >
+                                                                        {
+                                                                            formatearEstado(
+                                                                                torneo.estadoInscripcion
+                                                                            )
+                                                                        }
+                                                                    </span>
+
+                                                                </div>
+
+                                                            </article>
+
+                                                        );
+
                                                     }
-                                                >
-
-                                                    <article
-                                                        className="
-                                                            card
-                                                            h-100
-                                                        "
-                                                    >
-
-                                                        <div className="card-body">
-
-                                                            <h3
-                                                                className="
-                                                                    card-title
-                                                                    h5
-                                                                "
-                                                            >
-                                                                {
-                                                                    torneo.torneo
-                                                                }
-                                                            </h3>
-
-
-                                                            <p className="card-text">
-                                                                Juego:{" "}
-                                                                {
-                                                                    torneo.juego
-                                                                }
-                                                            </p>
-
-
-                                                            <p className="card-text">
-                                                                Resultado:{" "}
-                                                                {
-                                                                    torneo.resultado
-                                                                }
-                                                            </p>
-
-
-                                                            <p className="card-text mb-0">
-                                                                Inscripción:{" "}
-                                                                {
-                                                                    torneo.estadoInscripcion
-                                                                }
-                                                            </p>
-
-                                                        </div>
-
-                                                    </article>
-
-                                                </div>
-
-                                            );
-
+                                                )
                                         }
-                                    )
-                                }
 
-                            </div>
+                                    </div>
 
-                        )
-                }
+                                )
+                        }
 
-            </section>
+                    </section>
 
 
-            <section className="mb-4">
+                    {/* =========================
+                        SANCIONES
+                    ========================= */}
 
-                <h2 className="mb-3">
-                    Estadísticas
-                </h2>
+                    <section className="perfil-seccion">
 
+                        <div className="perfil-seccion-cabecera">
 
-                <div className="row g-3">
+                            <div>
 
-                    <div className="col-12 col-md-6">
+                                <span className="seccion-etiqueta">
+                                    DISCIPLINA
+                                </span>
 
-                        <article className="card h-100">
+                                <h2>
+                                    Sanciones
+                                </h2>
 
-                            <div className="card-body">
-
-                                <h3 className="h5">
-                                    Victorias
-                                </h3>
-
-                                <p className="fs-4 mb-0">
-                                    {
-                                        perfil.estadisticas.victorias
-                                    }
+                                <p>
+                                    Historial disciplinario
+                                    de tu cuenta.
                                 </p>
 
                             </div>
 
-                        </article>
-
-                    </div>
+                        </div>
 
 
-                    <div className="col-12 col-md-6">
+                        {
+                            perfil.sanciones.length ===
+                            0
+                                ? (
 
-                        <article className="card h-100">
+                                    <div className="perfil-sin-sanciones">
 
-                            <div className="card-body">
+                                        <div>
+                                            ✓
+                                        </div>
 
-                                <h3 className="h5">
-                                    Derrotas
-                                </h3>
+                                        <div>
 
-                                <p className="fs-4 mb-0">
-                                    {
-                                        perfil.estadisticas.derrotas
-                                    }
-                                </p>
+                                            <h3>
+                                                Historial limpio
+                                            </h3>
 
-                            </div>
+                                            <p>
+                                                No tienes sanciones
+                                                registradas.
+                                            </p>
 
-                        </article>
+                                        </div>
 
-                    </div>
+                                    </div>
+
+                                )
+                                : (
+
+                                    <div className="perfil-sanciones">
+
+                                        {
+                                            perfil.sanciones.map(
+                                                function (
+                                                    sancion
+                                                ) {
+
+                                                    return (
+
+                                                        <article
+                                                            className="perfil-sancion"
+                                                            key={
+                                                                sancion.id
+                                                            }
+                                                        >
+
+                                                            <div className="perfil-sancion-icono">
+                                                                !
+                                                            </div>
+
+
+                                                            <div className="perfil-sancion-info">
+
+                                                                <span>
+                                                                    MOTIVO
+                                                                </span>
+
+                                                                <h3>
+                                                                    {
+                                                                        sancion.motivo
+                                                                    }
+                                                                </h3>
+
+                                                                <p>
+                                                                    {
+                                                                        sancion.fechaInicio
+                                                                    }
+
+                                                                    {" → "}
+
+                                                                    {
+                                                                        sancion.fechaFin
+                                                                    }
+                                                                </p>
+
+                                                            </div>
+
+
+                                                            <div className="perfil-sancion-badges">
+
+                                                                <span className="perfil-badge sancion">
+                                                                    {
+                                                                        sancion.severidad
+                                                                    }
+                                                                </span>
+
+
+                                                                <span
+                                                                    className={
+                                                                        `perfil-badge ${
+                                                                            sancion.estado ===
+                                                                            "ACTIVA"
+                                                                                ? "advertencia"
+                                                                                : ""
+                                                                        }`
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        sancion.estado
+                                                                    }
+                                                                </span>
+
+                                                            </div>
+
+                                                        </article>
+
+                                                    );
+
+                                                }
+                                            )
+                                        }
+
+                                    </div>
+
+                                )
+                        }
+
+                    </section>
 
                 </div>
 
-            </section>
+
+                {/* =========================
+                    SIDEBAR CUENTA
+                ========================= */}
+
+                <aside className="perfil-sidebar">
 
 
-            <section className="mb-4">
+                    <section className="perfil-configuracion">
 
-                <h2 className="mb-3">
-                    Sanciones
-                </h2>
+                        <span className="seccion-etiqueta">
+                            CUENTA
+                        </span>
+
+                        <h2>
+                            Configuración
+                        </h2>
 
 
-                {
-                    perfil.sanciones.length === 0
-                        ? (
+                        <p>
+                            Personaliza el nombre
+                            con el que otros jugadores
+                            te ven en la plataforma.
+                        </p>
 
-                            <div
-                                className="
-                                    alert
-                                    alert-success
-                                "
+
+                        <form
+                            onSubmit={
+                                cambiarApodo
+                            }
+                        >
+
+                            <label
+                                htmlFor="nuevo-apodo"
+                                className="form-label"
                             >
-                                No tienes sanciones registradas.
-                            </div>
+                                Apodo
+                            </label>
 
-                        )
-                        : (
 
-                            <div className="list-group">
+                            <input
+                                id="nuevo-apodo"
+                                type="text"
+                                className="form-control"
+                                value={nuevoApodo}
+                                placeholder={
+                                    apodoActual
+                                }
+                                autoComplete="off"
+                                disabled={
+                                    guardando
+                                }
+                                onChange={
+                                    function (
+                                        event
+                                    ) {
+
+                                        setNuevoApodo(
+                                            event.target.value
+                                        );
+
+                                        setMensaje("");
+
+                                    }
+                                }
+                            />
+
+
+                            <small className="perfil-ayuda">
+                                Entre 3 y 15 caracteres,
+                                sin espacios.
+                            </small>
+
+
+                            <button
+                                type="submit"
+                                className="btn btn-primary w-100"
+                                disabled={
+                                    guardando
+                                }
+                            >
 
                                 {
-                                    perfil.sanciones.map(
-                                        function (sancion) {
-
-                                            return (
-
-                                                <div
-                                                    className="
-                                                        list-group-item
-                                                    "
-                                                    key={sancion.id}
-                                                >
-
-                                                    <p className="mb-1">
-
-                                                        <strong>
-                                                            Motivo:
-                                                        </strong>{" "}
-                                                        {
-                                                            sancion.motivo
-                                                        }
-
-                                                    </p>
-
-
-                                                    <p className="mb-1">
-
-                                                        Estado:{" "}
-                                                        {
-                                                            sancion.estado
-                                                        }
-
-                                                    </p>
-
-
-                                                    <p className="mb-1">
-
-                                                        Severidad:{" "}
-                                                        {
-                                                            sancion.severidad
-                                                        }
-
-                                                    </p>
-
-
-                                                    <p className="mb-0">
-
-                                                        {
-                                                            sancion.fechaInicio
-                                                        }
-                                                        {" → "}
-                                                        {
-                                                            sancion.fechaFin
-                                                        }
-
-                                                    </p>
-
-                                                </div>
-
-                                            );
-
-                                        }
-                                    )
+                                    guardando
+                                        ? "Guardando..."
+                                        : "Actualizar apodo"
                                 }
 
+                            </button>
+
+                        </form>
+
+
+                        {mensaje && (
+
+                            <div
+                                className={
+                                    mensaje.includes(
+                                        "correctamente"
+                                    )
+                                        ? "alert alert-success mt-3 mb-0"
+                                        : "alert alert-danger mt-3 mb-0"
+                                }
+                                role="alert"
+                            >
+                                {mensaje}
                             </div>
 
-                        )
-                }
+                        )}
 
-            </section>
+                    </section>
+
+
+                    <section className="perfil-resumen">
+
+                        <h3>
+                            Resumen competitivo
+                        </h3>
+
+
+                        <div>
+
+                            <span>
+                                Partidas jugadas
+                            </span>
+
+                            <strong>
+                                {partidasJugadas}
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Equipos
+                            </span>
+
+                            <strong>
+                                {
+                                    perfil
+                                        .equipos
+                                        .length
+                                }
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Torneos
+                            </span>
+
+                            <strong>
+                                {
+                                    perfil
+                                        .historialTorneos
+                                        .length
+                                }
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Sanciones
+                            </span>
+
+                            <strong>
+                                {
+                                    perfil
+                                        .sanciones
+                                        .length
+                                }
+                            </strong>
+
+                        </div>
+
+                    </section>
+
+                </aside>
+
+            </div>
 
         </>
 

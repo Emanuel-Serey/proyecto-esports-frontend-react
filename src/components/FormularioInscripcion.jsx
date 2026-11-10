@@ -5,42 +5,99 @@ import {
 } from "react";
 
 import {
+    Link
+} from "react-router-dom";
+
+import {
     obtenerDatosInscripcion,
     crearInscripcion
 } from "../services/inscripcionesService.js";
 
 
+function formatearFecha(fecha) {
+
+    if (!fecha) {
+        return "Sin fecha";
+    }
+
+
+    const objetoFecha =
+        new Date(
+            `${fecha}T00:00:00`
+        );
+
+
+    if (
+        Number.isNaN(
+            objetoFecha.getTime()
+        )
+    ) {
+        return fecha;
+    }
+
+
+    return objetoFecha.toLocaleDateString(
+        "es-CL",
+        {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        }
+    );
+}
+
+
 function FormularioInscripcion() {
 
-    const [torneos, setTorneos] =
-        useState([]);
+    const [
+        torneos,
+        setTorneos
+    ] = useState([]);
 
-    const [equipos, setEquipos] =
-        useState([]);
+    const [
+        equipos,
+        setEquipos
+    ] = useState([]);
 
-    const [usuario, setUsuario] =
-        useState(null);
+    const [
+        usuario,
+        setUsuario
+    ] = useState(null);
 
-    const [torneoId, setTorneoId] =
-        useState("");
+    const [
+        torneoId,
+        setTorneoId
+    ] = useState("");
 
-    const [equipoId, setEquipoId] =
-        useState("");
+    const [
+        equipoId,
+        setEquipoId
+    ] = useState("");
 
-    const [cargando, setCargando] =
-        useState(true);
+    const [
+        cargando,
+        setCargando
+    ] = useState(true);
 
-    const [enviando, setEnviando] =
-        useState(false);
+    const [
+        enviando,
+        setEnviando
+    ] = useState(false);
 
-    const [mensaje, setMensaje] =
-        useState("");
+    const [
+        mensaje,
+        setMensaje
+    ] = useState("");
 
-    const [error, setError] =
-        useState("");
+    const [
+        error,
+        setError
+    ] = useState("");
 
-    const [resumen, setResumen] =
-        useState(null);
+    const [
+        resumen,
+        setResumen
+    ] = useState(null);
 
 
     useEffect(function () {
@@ -78,49 +135,56 @@ function FormularioInscripcion() {
 
 
     const torneoSeleccionado =
-        useMemo(function () {
+        useMemo(
+            function () {
 
-            return torneos.find(
-                function (torneo) {
+                return torneos.find(
+                    function (torneo) {
 
-                    return (
-                        torneo.id ===
-                        Number(torneoId)
-                    );
+                        return (
+                            torneo.id ===
+                            Number(torneoId)
+                        );
 
-                }
-            );
+                    }
+                );
 
-        }, [
-            torneos,
-            torneoId
-        ]);
+            },
+            [
+                torneos,
+                torneoId
+            ]
+        );
 
 
     const equiposDisponibles =
-        useMemo(function () {
+        useMemo(
+            function () {
 
-            if (!torneoSeleccionado) {
-                return [];
-            }
-
-
-            return equipos.filter(
-                function (equipo) {
-
-                    return (
-                        equipo.estado === "ACTIVO" &&
-                        equipo.juegoPrincipalId ===
-                        torneoSeleccionado.juegoId
-                    );
-
+                if (!torneoSeleccionado) {
+                    return [];
                 }
-            );
 
-        }, [
-            equipos,
-            torneoSeleccionado
-        ]);
+
+                return equipos.filter(
+                    function (equipo) {
+
+                        return (
+                            equipo.estado ===
+                                "ACTIVO" &&
+                            equipo.juegoPrincipalId ===
+                                torneoSeleccionado.juegoId
+                        );
+
+                    }
+                );
+
+            },
+            [
+                equipos,
+                torneoSeleccionado
+            ]
+        );
 
 
     function obtenerModalidadVisual(
@@ -131,9 +195,11 @@ function FormularioInscripcion() {
             return "Por equipos";
         }
 
+
         if (modalidad === "JUGADOR") {
             return "Individual";
         }
+
 
         return modalidad;
     }
@@ -177,9 +243,15 @@ function FormularioInscripcion() {
         let payload;
 
 
-        if (tipoParticipante === "EQUIPO") {
+        if (
+            tipoParticipante ===
+            "EQUIPO"
+        ) {
 
-            if (equipoId === "") {
+            if (
+                equipoId ===
+                ""
+            ) {
 
                 setError(
                     "Debes seleccionar un equipo."
@@ -222,6 +294,7 @@ function FormularioInscripcion() {
                     "JUGADOR"
 
             };
+
         }
 
 
@@ -255,7 +328,8 @@ function FormularioInscripcion() {
                     torneoSeleccionado.nombre,
 
                 participante:
-                    tipoParticipante === "EQUIPO"
+                    tipoParticipante ===
+                    "EQUIPO"
                         ? equipo?.nombre
                         : usuario.nickname,
 
@@ -281,6 +355,7 @@ function FormularioInscripcion() {
                 error.message
             );
 
+
         } finally {
 
             setEnviando(false);
@@ -293,17 +368,18 @@ function FormularioInscripcion() {
 
         return (
 
-            <section className="card mb-4">
+            <div className="inscripcion-cargando">
 
-                <div className="card-body">
+                <div
+                    className="spinner-border"
+                    role="status"
+                />
 
-                    <p className="mb-0">
-                        Cargando información de inscripción...
-                    </p>
+                <p>
+                    Cargando torneos disponibles...
+                </p>
 
-                </div>
-
-            </section>
+            </div>
 
         );
     }
@@ -313,19 +389,118 @@ function FormularioInscripcion() {
 
         <>
 
-            <section className="card mb-4">
 
-                <div className="card-body">
+            <section className="inscripcion-hero">
 
-                    <h2 className="card-title mb-3">
-                        Inscripción a torneo
-                    </h2>
+                <div>
+
+                    <span className="seccion-etiqueta">
+                        COMPITE
+                    </span>
 
 
-                    <p className="card-text">
-                        Selecciona un torneo para registrar
-                        tu participación.
+                    <h1>
+                        Entra a la
+                        <span>
+                            {" "}competencia
+                        </span>
+                    </h1>
+
+
+                    <p>
+                        Selecciona un torneo,
+                        confirma tu participación
+                        y prepárate para entrar
+                        a la arena.
                     </p>
+
+                </div>
+
+
+                <div className="inscripcion-hero-datos">
+
+                    <article>
+
+                        <strong>
+                            {torneos.length}
+                        </strong>
+
+                        <span>
+                            TORNEOS DISPONIBLES
+                        </span>
+
+                    </article>
+
+
+                    <article>
+
+                        <strong>
+                            {
+                                equipos.filter(
+                                    function (equipo) {
+
+                                        return (
+                                            equipo.estado ===
+                                            "ACTIVO"
+                                        );
+
+                                    }
+                                ).length
+                            }
+                        </strong>
+
+                        <span>
+                            EQUIPOS ACTIVOS
+                        </span>
+
+                    </article>
+
+
+                    <article>
+
+                        <strong>
+                            {
+                                usuario
+                                    ? usuario.nickname
+                                        .charAt(0)
+                                        .toUpperCase()
+                                    : "J"
+                            }
+                        </strong>
+
+                        <span>
+                            JUGADOR
+                        </span>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <div className="inscripcion-layout">
+
+
+                <section className="inscripcion-formulario">
+
+                    <div className="inscripcion-titulo">
+
+                        <span className="seccion-etiqueta">
+                            INSCRIPCIÓN
+                        </span>
+
+                        <h2>
+                            Selecciona tu torneo
+                        </h2>
+
+                        <p>
+                            Solo se muestran torneos
+                            actualmente abiertos y dentro
+                            del plazo de inscripción.
+                        </p>
+
+                    </div>
 
 
                     <form
@@ -334,13 +509,13 @@ function FormularioInscripcion() {
                         }
                     >
 
-                        <div className="mb-3">
+                        <div className="inscripcion-campo">
 
                             <label
                                 htmlFor="torneo"
                                 className="form-label"
                             >
-                                Torneo:
+                                Torneo
                             </label>
 
 
@@ -365,82 +540,204 @@ function FormularioInscripcion() {
                             >
 
                                 <option value="">
-                                    Selecciona un torneo
+                                    Selecciona una competencia
                                 </option>
 
 
-                                {torneos.map(
-                                    function (torneo) {
+                                {
+                                    torneos.map(
+                                        function (torneo) {
 
-                                        return (
+                                            return (
 
-                                            <option
-                                                key={torneo.id}
-                                                value={torneo.id}
-                                            >
-                                                {torneo.nombre}
-                                            </option>
+                                                <option
+                                                    key={
+                                                        torneo.id
+                                                    }
+                                                    value={
+                                                        torneo.id
+                                                    }
+                                                >
+                                                    {
+                                                        torneo.nombre
+                                                    }
+                                                </option>
 
-                                        );
+                                            );
 
-                                    }
-                                )}
+                                        }
+                                    )
+                                }
 
                             </select>
 
                         </div>
 
 
-                        {torneoSeleccionado && (
+                        {torneos.length === 0 && (
 
-                            <div
-                                className="
-                                    alert
-                                    alert-secondary
-                                "
-                            >
+                            <div className="inscripcion-sin-torneos">
 
-                                <strong>
-                                    Modalidad:
-                                </strong>{" "}
-                                {
-                                    obtenerModalidadVisual(
-                                        torneoSeleccionado.modalidad
-                                    )
-                                }
+                                <div>
+                                    ◇
+                                </div>
 
-                                <br />
+                                <div>
 
-                                <strong>
-                                    Cierre de inscripción:
-                                </strong>{" "}
-                                {
-                                    torneoSeleccionado.cierreInscripcion
-                                }
+                                    <h3>
+                                        No hay torneos disponibles
+                                    </h3>
+
+                                    <p>
+                                        Actualmente no existen
+                                        competencias abiertas
+                                        dentro del plazo de inscripción.
+                                    </p>
+
+                                </div>
 
                             </div>
 
                         )}
 
 
+                        {torneoSeleccionado && (
+
+                            <article className="inscripcion-torneo-card">
+
+                                <div className="inscripcion-torneo-cabecera">
+
+                                    <div>
+
+                                        <span>
+                                            TORNEO SELECCIONADO
+                                        </span>
+
+                                        <h3>
+                                            {
+                                                torneoSeleccionado
+                                                    .nombre
+                                            }
+                                        </h3>
+
+                                    </div>
+
+
+                                    <span className="inscripcion-estado">
+                                        ABIERTO
+                                    </span>
+
+                                </div>
+
+
+                                <div className="inscripcion-torneo-datos">
+
+                                    <div>
+
+                                        <small>
+                                            MODALIDAD
+                                        </small>
+
+                                        <strong>
+                                            {
+                                                obtenerModalidadVisual(
+                                                    torneoSeleccionado
+                                                        .modalidad
+                                                )
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <small>
+                                            CUPOS
+                                        </small>
+
+                                        <strong>
+                                            {
+                                                torneoSeleccionado
+                                                    .cupoMaximo
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <small>
+                                            CIERRE
+                                        </small>
+
+                                        <strong>
+                                            {
+                                                formatearFecha(
+                                                    torneoSeleccionado
+                                                        .cierreInscripcion
+                                                )
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <small>
+                                            INICIO
+                                        </small>
+
+                                        <strong>
+                                            {
+                                                formatearFecha(
+                                                    torneoSeleccionado
+                                                        .fechaInicio
+                                                )
+                                            }
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            </article>
+
+                        )}
+
+
                         {
-                            torneoSeleccionado?.modalidad ===
+                            torneoSeleccionado
+                                ?.modalidad ===
                             "EQUIPO" && (
 
-                                <div className="mb-3">
+                                <div className="inscripcion-participante">
+
+                                    <span className="seccion-etiqueta">
+                                        ESCUADRA
+                                    </span>
+
+                                    <h3>
+                                        Selecciona tu equipo
+                                    </h3>
+
 
                                     <label
                                         htmlFor="equipo-seleccionado"
                                         className="form-label"
                                     >
-                                        Equipo:
+                                        Equipo compatible
                                     </label>
 
 
                                     <select
                                         id="equipo-seleccionado"
                                         className="form-select"
-                                        value={equipoId}
+                                        value={
+                                            equipoId
+                                        }
                                         onChange={
                                             function (event) {
 
@@ -468,10 +765,16 @@ function FormularioInscripcion() {
                                                     return (
 
                                                         <option
-                                                            key={equipo.id}
-                                                            value={equipo.id}
+                                                            key={
+                                                                equipo.id
+                                                            }
+                                                            value={
+                                                                equipo.id
+                                                            }
                                                         >
-                                                            {equipo.nombre}
+                                                            {
+                                                                equipo.nombre
+                                                            }
                                                         </option>
 
                                                     );
@@ -484,19 +787,35 @@ function FormularioInscripcion() {
 
 
                                     {
-                                        equiposDisponibles.length === 0 && (
+                                        equiposDisponibles.length ===
+                                        0 && (
 
-                                            <div
-                                                className="
-                                                    alert
-                                                    alert-warning
-                                                    mt-3
-                                                    mb-0
-                                                "
-                                            >
-                                                No tienes un equipo activo
-                                                compatible con el juego
-                                                de este torneo.
+                                            <div className="inscripcion-aviso">
+
+                                                <div>
+                                                    !
+                                                </div>
+
+                                                <div>
+
+                                                    <strong>
+                                                        No tienes un equipo compatible
+                                                    </strong>
+
+                                                    <p>
+                                                        Necesitas un equipo activo
+                                                        del mismo juego que el torneo.
+                                                    </p>
+
+
+                                                    <Link
+                                                        to="/equipo"
+                                                    >
+                                                        Ir a mis equipos →
+                                                    </Link>
+
+                                                </div>
+
                                             </div>
 
                                         )
@@ -509,72 +828,58 @@ function FormularioInscripcion() {
 
 
                         {
-                            torneoSeleccionado?.modalidad ===
-                            "JUGADOR" && usuario && (
+                            torneoSeleccionado
+                                ?.modalidad ===
+                            "JUGADOR" &&
+                            usuario && (
 
-                                <div className="mb-3">
+                                <div className="inscripcion-participante">
 
-                                    <label
-                                        className="form-label"
-                                    >
-                                        Participante:
-                                    </label>
+                                    <span className="seccion-etiqueta">
+                                        PARTICIPANTE
+                                    </span>
+
+                                    <h3>
+                                        Inscripción individual
+                                    </h3>
 
 
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        value={usuario.nickname}
-                                        disabled
-                                    />
+                                    <div className="inscripcion-jugador">
+
+                                        <div className="inscripcion-avatar">
+
+                                            {
+                                                usuario.nickname
+                                                    .slice(
+                                                        0,
+                                                        2
+                                                    )
+                                                    .toUpperCase()
+                                            }
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <span>
+                                                JUGADOR
+                                            </span>
+
+                                            <strong>
+                                                {
+                                                    usuario.nickname
+                                                }
+                                            </strong>
+
+                                        </div>
+
+                                    </div>
 
                                 </div>
 
                             )
                         }
-
-
-                        <div className="card bg-light mb-3">
-
-                            <div className="card-body">
-
-                                <h3 className="h5">
-                                    Validaciones realizadas
-                                    por el sistema
-                                </h3>
-
-
-                                <ul className="mb-0">
-
-                                    <li>
-                                        Plazo de inscripción vigente.
-                                    </li>
-
-                                    <li>
-                                        Cupos disponibles.
-                                    </li>
-
-                                    <li>
-                                        Modalidad correcta.
-                                    </li>
-
-                                    <li>
-                                        Equipo completo y del juego correcto.
-                                    </li>
-
-                                    <li>
-                                        Participante sin sanciones activas.
-                                    </li>
-
-                                    <li>
-                                        No estar previamente inscrito.
-                                    </li>
-
-                                </ul>
-
-                            </div>
-
-                        </div>
 
 
                         {error && (
@@ -603,95 +908,243 @@ function FormularioInscripcion() {
 
                         <button
                             type="submit"
-                            className="btn btn-primary"
+                            className="btn btn-primary inscripcion-boton"
                             disabled={
                                 enviando ||
                                 !torneoSeleccionado ||
                                 (
-                                    torneoSeleccionado?.modalidad ===
-                                    "EQUIPO" &&
+                                    torneoSeleccionado
+                                        ?.modalidad ===
+                                        "EQUIPO" &&
                                     equipoId === ""
                                 )
                             }
                         >
 
-                            {
-                                enviando
-                                    ? "Inscribiendo..."
-                                    : "Inscribirse"
-                            }
+                            <span>
+
+                                {
+                                    enviando
+                                        ? "Inscribiendo..."
+                                        : "Confirmar inscripción"
+                                }
+
+                            </span>
+
+
+                            {!enviando && (
+                                <span>
+                                    →
+                                </span>
+                            )}
 
                         </button>
 
                     </form>
 
-                </div>
-
-            </section>
+                </section>
 
 
-            <section className="card">
-
-                <div className="card-body">
-
-                    <h2 className="card-title">
-                        Confirmación
-                    </h2>
+                <aside className="inscripcion-sidebar">
 
 
-                    {resumen ? (
+                    <section className="inscripcion-validaciones">
 
-                        <div
-                            className="
-                                alert
-                                alert-success
-                                mb-0
-                            "
-                        >
+                        <span className="seccion-etiqueta">
+                            REQUISITOS
+                        </span>
 
-                            <h3 className="h5">
-                                Inscripción realizada
-                                correctamente
-                            </h3>
+                        <h2>
+                            Antes de competir
+                        </h2>
 
-
-                            <p>
-                                Torneo:{" "}
-                                {resumen.torneo}
-                            </p>
-
-
-                            <p>
-                                Participante:{" "}
-                                {resumen.participante}
-                            </p>
-
-
-                            <p>
-                                Modalidad:{" "}
-                                {resumen.modalidad}
-                            </p>
-
-
-                            <p className="mb-0">
-                                Estado:{" "}
-                                {resumen.estado}
-                            </p>
-
-                        </div>
-
-                    ) : (
-
-                        <p className="mb-0">
-                            Aún no se ha realizado
-                            una inscripción.
+                        <p>
+                            El sistema comprobará
+                            automáticamente estos requisitos.
                         </p>
 
-                    )}
 
-                </div>
+                        <ul>
 
-            </section>
+                            <li>
+                                <span>
+                                    ✓
+                                </span>
+
+                                Plazo de inscripción vigente
+                            </li>
+
+
+                            <li>
+                                <span>
+                                    ✓
+                                </span>
+
+                                Cupos disponibles
+                            </li>
+
+
+                            <li>
+                                <span>
+                                    ✓
+                                </span>
+
+                                Modalidad correcta
+                            </li>
+
+
+                            <li>
+                                <span>
+                                    ✓
+                                </span>
+
+                                Equipo completo y compatible
+                            </li>
+
+
+                            <li>
+                                <span>
+                                    ✓
+                                </span>
+
+                                Sin sanciones activas
+                            </li>
+
+
+                            <li>
+                                <span>
+                                    ✓
+                                </span>
+
+                                Sin inscripción duplicada
+                            </li>
+
+                        </ul>
+
+                    </section>
+
+
+                    <section
+                        className={
+                            `inscripcion-confirmacion ${
+                                resumen
+                                    ? "completada"
+                                    : ""
+                            }`
+                        }
+                    >
+
+                        <span className="seccion-etiqueta">
+                            ESTADO
+                        </span>
+
+
+                        {!resumen ? (
+
+                            <>
+
+                                <div className="inscripcion-confirmacion-icono">
+                                    ◇
+                                </div>
+
+                                <h3>
+                                    Sin inscripción
+                                </h3>
+
+                                <p>
+                                    Selecciona un torneo
+                                    y completa el proceso
+                                    para ver aquí la confirmación.
+                                </p>
+
+                            </>
+
+                        ) : (
+
+                            <>
+
+                                <div className="inscripcion-confirmacion-icono exito">
+                                    ✓
+                                </div>
+
+
+                                <h3>
+                                    Inscripción registrada
+                                </h3>
+
+
+                                <div className="inscripcion-resumen">
+
+                                    <div>
+
+                                        <span>
+                                            Torneo
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                resumen.torneo
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Participante
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                resumen.participante
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Modalidad
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                resumen.modalidad
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Estado
+                                        </span>
+
+                                        <strong className="inscripcion-resumen-estado">
+                                            {
+                                                resumen.estado
+                                            }
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            </>
+
+                        )}
+
+                    </section>
+
+                </aside>
+
+            </div>
 
         </>
 

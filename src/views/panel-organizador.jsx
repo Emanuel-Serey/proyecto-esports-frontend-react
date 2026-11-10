@@ -1,5 +1,6 @@
 import {
     useEffect,
+    useMemo,
     useState
 } from "react";
 
@@ -16,38 +17,60 @@ import GestionResultadosOrganizador
 import GestionSancionesOrganizador
     from "../components/GestionSancionesOrganizador.jsx";
 
+import "./panel-organizador.css";
+
 
 function PanelOrganizador() {
 
-    const [torneos, setTorneos] =
-        useState([]);
+    const [
+        torneos,
+        setTorneos
+    ] = useState([]);
 
-    const [inscripciones, setInscripciones] =
-        useState([]);
+    const [
+        inscripciones,
+        setInscripciones
+    ] = useState([]);
 
-    const [equipos, setEquipos] =
-        useState([]);
+    const [
+        equipos,
+        setEquipos
+    ] = useState([]);
 
-    const [jugadores, setJugadores] =
-        useState([]);
+    const [
+        jugadores,
+        setJugadores
+    ] = useState([]);
 
-    const [partidas, setPartidas] =
-        useState([]);
+    const [
+        partidas,
+        setPartidas
+    ] = useState([]);
 
-    const [resultados, setResultados] =
-        useState([]);
+    const [
+        resultados,
+        setResultados
+    ] = useState([]);
 
-    const [rankings, setRankings] =
-        useState([]);
+    const [
+        rankings,
+        setRankings
+    ] = useState([]);
 
-    const [sanciones, setSanciones] =
-        useState([]);
+    const [
+        sanciones,
+        setSanciones
+    ] = useState([]);
 
-    const [cargando, setCargando] =
-        useState(true);
+    const [
+        cargando,
+        setCargando
+    ] = useState(true);
 
-    const [error, setError] =
-        useState("");
+    const [
+        error,
+        setError
+    ] = useState("");
 
 
     async function cargarDatos() {
@@ -116,30 +139,114 @@ function PanelOrganizador() {
     }
 
 
-    useEffect(function () {
+    useEffect(
+        function () {
 
-        cargarDatos();
+            cargarDatos();
 
-    }, []);
+        },
+        []
+    );
+
+
+    const partidasProgramadas =
+        useMemo(
+            function () {
+
+                return partidas.filter(
+                    function (partida) {
+
+                        return (
+                            partida.estado ===
+                            "PROGRAMADA"
+                        );
+
+                    }
+                ).length;
+
+            },
+            [partidas]
+        );
+
+
+    const partidasEnCurso =
+        useMemo(
+            function () {
+
+                return partidas.filter(
+                    function (partida) {
+
+                        return (
+                            partida.estado ===
+                            "EN_CURSO"
+                        );
+
+                    }
+                ).length;
+
+            },
+            [partidas]
+        );
+
+
+    const resultadosPendientes =
+        useMemo(
+            function () {
+
+                return resultados.filter(
+                    function (resultado) {
+
+                        return (
+                            resultado.estadoValidacion ===
+                            "PENDIENTE"
+                        );
+
+                    }
+                ).length;
+
+            },
+            [resultados]
+        );
+
+
+    const sancionesActivas =
+        useMemo(
+            function () {
+
+                return sanciones.filter(
+                    function (sancion) {
+
+                        return (
+                            sancion.estado ===
+                            "ACTIVA"
+                        );
+
+                    }
+                ).length;
+
+            },
+            [sanciones]
+        );
 
 
     if (cargando) {
 
         return (
 
-            <main className="container py-4">
+            <main className="organizador-page">
 
-                <section className="card">
+                <div className="organizador-cargando">
 
-                    <div className="card-body">
+                    <div
+                        className="spinner-border"
+                        role="status"
+                    />
 
-                        <p className="mb-0">
-                            Cargando panel del organizador...
-                        </p>
+                    <p>
+                        Cargando panel del organizador...
+                    </p>
 
-                    </div>
-
-                </section>
+                </div>
 
             </main>
 
@@ -149,31 +256,57 @@ function PanelOrganizador() {
 
     return (
 
-        <main className="container py-4">
+        <main className="organizador-page">
 
 
-            {/* ENCABEZADO */}
+            {/* =========================
+                CABECERA
+            ========================= */}
 
-            <section className="card mb-4">
+            <section className="organizador-hero">
 
-                <div className="card-body">
+                <div>
 
-                    <h2 className="card-title">
-                        Panel del organizador
-                    </h2>
+                    <span className="seccion-etiqueta">
+                        ORGANIZACIÓN
+                    </span>
 
 
-                    <p className="card-text mb-0">
-                        Gestiona partidas, resultados,
-                        rankings y sanciones.
+                    <h1>
+                        Centro competitivo
+                    </h1>
+
+
+                    <p>
+                        Controla partidas, resultados,
+                        rankings y disciplina de las
+                        competencias.
                     </p>
+
+                </div>
+
+
+                <div className="organizador-hero-estado">
+
+                    <span className="organizador-estado-punto" />
+
+
+                    <div>
+
+                        <strong>
+                            Operación activa
+                        </strong>
+
+                        <small>
+                            Gestión de competencias
+                        </small>
+
+                    </div>
 
                 </div>
 
             </section>
 
-
-            {/* ERROR GENERAL */}
 
             {error && (
 
@@ -187,131 +320,411 @@ function PanelOrganizador() {
             )}
 
 
-            {/* RESUMEN */}
+            {/* =========================
+                KPIs
+            ========================= */}
 
-            <section className="row g-3 mb-4">
+            <section className="organizador-kpis">
 
 
-                <div className="col-12 col-md-6 col-lg-3">
+                <article>
 
-                    <article className="card h-100">
+                    <div className="organizador-kpi-icono">
+                        P
+                    </div>
 
-                        <div className="card-body">
 
-                            <h3 className="h5">
-                                Partidas
-                            </h3>
+                    <div>
 
-                            <p className="fs-3 mb-0">
-                                {partidas.length}
-                            </p>
+                        <span>
+                            PARTIDAS
+                        </span>
 
-                        </div>
+                        <strong>
+                            {
+                                partidas.length
+                            }
+                        </strong>
 
-                    </article>
+                        <small>
+                            {
+                                partidasProgramadas
+                            } programadas
+                        </small>
+
+                    </div>
+
+                </article>
+
+
+                <article>
+
+                    <div className="organizador-kpi-icono">
+                        ▶
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            EN CURSO
+                        </span>
+
+                        <strong>
+                            {
+                                partidasEnCurso
+                            }
+                        </strong>
+
+                        <small>
+                            partidas activas
+                        </small>
+
+                    </div>
+
+                </article>
+
+
+                <article>
+
+                    <div className="organizador-kpi-icono">
+                        R
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            RESULTADOS
+                        </span>
+
+                        <strong>
+                            {
+                                resultados.length
+                            }
+                        </strong>
+
+                        <small>
+                            {
+                                resultadosPendientes
+                            } pendientes
+                        </small>
+
+                    </div>
+
+                </article>
+
+
+                <article>
+
+                    <div className="organizador-kpi-icono">
+                        !
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            SANCIONES
+                        </span>
+
+                        <strong>
+                            {
+                                sanciones.length
+                            }
+                        </strong>
+
+                        <small>
+                            {
+                                sancionesActivas
+                            } activas
+                        </small>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+
+            {/* =========================
+                RESUMEN SECUNDARIO
+            ========================= */}
+
+            <section className="organizador-resumen">
+
+
+                <div>
+
+                    <span>
+                        TORNEOS
+                    </span>
+
+                    <strong>
+                        {
+                            torneos.length
+                        }
+                    </strong>
 
                 </div>
 
 
-                <div className="col-12 col-md-6 col-lg-3">
+                <div>
 
-                    <article className="card h-100">
+                    <span>
+                        INSCRIPCIONES
+                    </span>
 
-                        <div className="card-body">
-
-                            <h3 className="h5">
-                                Resultados
-                            </h3>
-
-                            <p className="fs-3 mb-0">
-                                {resultados.length}
-                            </p>
-
-                        </div>
-
-                    </article>
+                    <strong>
+                        {
+                            inscripciones.length
+                        }
+                    </strong>
 
                 </div>
 
 
-                <div className="col-12 col-md-6 col-lg-3">
+                <div>
 
-                    <article className="card h-100">
+                    <span>
+                        EQUIPOS
+                    </span>
 
-                        <div className="card-body">
-
-                            <h3 className="h5">
-                                Registros ranking
-                            </h3>
-
-                            <p className="fs-3 mb-0">
-                                {rankings.length}
-                            </p>
-
-                        </div>
-
-                    </article>
+                    <strong>
+                        {
+                            equipos.length
+                        }
+                    </strong>
 
                 </div>
 
 
-                <div className="col-12 col-md-6 col-lg-3">
+                <div>
 
-                    <article className="card h-100">
+                    <span>
+                        RANKINGS
+                    </span>
 
-                        <div className="card-body">
-
-                            <h3 className="h5">
-                                Sanciones
-                            </h3>
-
-                            <p className="fs-3 mb-0">
-                                {sanciones.length}
-                            </p>
-
-                        </div>
-
-                    </article>
+                    <strong>
+                        {
+                            rankings.length
+                        }
+                    </strong>
 
                 </div>
 
             </section>
 
 
-            {/* PARTIDAS */}
+            {/* =========================
+                NAVEGACIÓN
+            ========================= */}
 
-            <GestionPartidasOrganizador
-                torneos={torneos}
-                inscripciones={inscripciones}
-                equipos={equipos}
-                jugadores={jugadores}
-                partidas={partidas}
-                onRecargar={cargarDatos}
-            />
+            <nav className="organizador-nav">
 
 
-            {/* RESULTADOS Y RANKING */}
+                <a href="#organizador-partidas">
 
-            <GestionResultadosOrganizador
-                partidas={partidas}
-                resultados={resultados}
-                torneos={torneos}
-                inscripciones={inscripciones}
-                equipos={equipos}
-                jugadores={jugadores}
-                rankings={rankings}
-                onRecargar={cargarDatos}
-            />
+                    <span>
+                        01
+                    </span>
+
+                    Partidas
+
+                </a>
 
 
-            {/* SANCIONES */}
+                <a href="#organizador-resultados">
 
-            <GestionSancionesOrganizador
-                sanciones={sanciones}
-                jugadores={jugadores}
-                equipos={equipos}
-                onRecargar={cargarDatos}
-            />
+                    <span>
+                        02
+                    </span>
+
+                    Resultados y ranking
+
+                </a>
+
+
+                <a href="#organizador-sanciones">
+
+                    <span>
+                        03
+                    </span>
+
+                    Sanciones
+
+                </a>
+
+            </nav>
+
+
+            {/* =========================
+                PARTIDAS
+            ========================= */}
+
+            <div
+                id="organizador-partidas"
+                className="organizador-modulo"
+            >
+
+                <div className="organizador-modulo-cabecera">
+
+                    <div>
+
+                        <span className="seccion-etiqueta">
+                            CALENDARIO COMPETITIVO
+                        </span>
+
+                        <h2>
+                            Gestión de partidas
+                        </h2>
+
+                        <p>
+                            Programa enfrentamientos
+                            y controla su estado.
+                        </p>
+
+                    </div>
+
+
+                    <span className="organizador-contador">
+
+                        {
+                            partidas.length
+                        }
+
+                        {" partidas"}
+
+                    </span>
+
+                </div>
+
+
+                <GestionPartidasOrganizador
+                    torneos={torneos}
+                    inscripciones={inscripciones}
+                    equipos={equipos}
+                    jugadores={jugadores}
+                    partidas={partidas}
+                    onRecargar={
+                        cargarDatos
+                    }
+                />
+
+            </div>
+
+
+            {/* =========================
+                RESULTADOS
+            ========================= */}
+
+            <div
+                id="organizador-resultados"
+                className="organizador-modulo"
+            >
+
+                <div className="organizador-modulo-cabecera">
+
+                    <div>
+
+                        <span className="seccion-etiqueta">
+                            COMPETICIÓN
+                        </span>
+
+                        <h2>
+                            Resultados y ranking
+                        </h2>
+
+                        <p>
+                            Registra resultados,
+                            valida encuentros y actualiza
+                            las posiciones.
+                        </p>
+
+                    </div>
+
+
+                    <span className="organizador-contador">
+
+                        {
+                            resultados.length
+                        }
+
+                        {" resultados"}
+
+                    </span>
+
+                </div>
+
+
+                <GestionResultadosOrganizador
+                    partidas={partidas}
+                    resultados={resultados}
+                    torneos={torneos}
+                    inscripciones={inscripciones}
+                    equipos={equipos}
+                    jugadores={jugadores}
+                    rankings={rankings}
+                    onRecargar={
+                        cargarDatos
+                    }
+                />
+
+            </div>
+
+
+            {/* =========================
+                SANCIONES
+            ========================= */}
+
+            <div
+                id="organizador-sanciones"
+                className="organizador-modulo"
+            >
+
+                <div className="organizador-modulo-cabecera">
+
+                    <div>
+
+                        <span className="seccion-etiqueta">
+                            DISCIPLINA
+                        </span>
+
+                        <h2>
+                            Gestión de sanciones
+                        </h2>
+
+                        <p>
+                            Administra medidas disciplinarias
+                            para jugadores y equipos.
+                        </p>
+
+                    </div>
+
+
+                    <span className="organizador-contador">
+
+                        {
+                            sanciones.length
+                        }
+
+                        {" sanciones"}
+
+                    </span>
+
+                </div>
+
+
+                <GestionSancionesOrganizador
+                    sanciones={sanciones}
+                    jugadores={jugadores}
+                    equipos={equipos}
+                    onRecargar={
+                        cargarDatos
+                    }
+                />
+
+            </div>
 
         </main>
 

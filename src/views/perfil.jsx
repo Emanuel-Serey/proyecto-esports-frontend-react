@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import {
+    useEffect,
+    useState
+} from "react";
 
 import {
     obtenerPerfilJugador
@@ -7,20 +10,33 @@ import {
 import PerfilJugador
     from "../components/PerfilJugador.jsx";
 
+import "./perfil.css";
+
 
 function Perfil() {
 
-    const [usuario, setUsuario] =
-        useState(null);
+    const [
+        usuario,
+        setUsuario
+    ] = useState(null);
 
-    const [perfil, setPerfil] =
-        useState(null);
 
-    const [cargando, setCargando] =
-        useState(true);
+    const [
+        perfil,
+        setPerfil
+    ] = useState(null);
 
-    const [error, setError] =
-        useState("");
+
+    const [
+        cargando,
+        setCargando
+    ] = useState(true);
+
+
+    const [
+        error,
+        setError
+    ] = useState("");
 
 
     useEffect(function () {
@@ -28,19 +44,27 @@ function Perfil() {
         obtenerPerfilJugador()
             .then(function (datos) {
 
-                setUsuario(datos.usuario);
+                setUsuario(
+                    datos.usuario
+                );
 
-                setPerfil(datos.perfil);
+                setPerfil(
+                    datos.perfil
+                );
 
             })
             .catch(function (error) {
 
-                setError(error.message);
+                setError(
+                    error.message
+                );
 
             })
             .finally(function () {
 
-                setCargando(false);
+                setCargando(
+                    false
+                );
 
             });
 
@@ -51,15 +75,20 @@ function Perfil() {
 
         return (
 
-            <main className="container py-4">
+            <main className="perfil-page">
 
-                <section>
+                <div className="perfil-cargando">
+
+                    <div
+                        className="spinner-border"
+                        role="status"
+                    />
 
                     <p>
-                        Cargando perfil del jugador...
+                        Cargando perfil...
                     </p>
 
-                </section>
+                </div>
 
             </main>
 
@@ -72,9 +101,9 @@ function Perfil() {
 
         return (
 
-            <main className="container py-4">
+            <main className="perfil-page">
 
-                <section>
+                <div className="perfil-error">
 
                     <div
                         className="alert alert-danger"
@@ -83,7 +112,7 @@ function Perfil() {
                         {error}
                     </div>
 
-                </section>
+                </div>
 
             </main>
 
@@ -94,7 +123,7 @@ function Perfil() {
 
     return (
 
-        <main className="container py-4">
+        <main className="perfil-page">
 
             <PerfilJugador
                 usuario={usuario}

@@ -1,4 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+    useEffect,
+    useMemo,
+    useState
+} from "react";
 
 import {
     equiposService
@@ -8,79 +12,169 @@ import ListaIntegrantes
     from "./ListaIntegrantes.jsx";
 
 
+function obtenerInicial(
+    nombre
+) {
+
+    return String(
+        nombre || "E"
+    )
+        .trim()
+        .charAt(0)
+        .toUpperCase();
+}
+
+
 function FormularioEquipo() {
 
-    const [usuario, setUsuario] = useState(null);
-    const [jugadores, setJugadores] = useState([]);
-    const [juegos, setJuegos] = useState([]);
+    const [
+        usuario,
+        setUsuario
+    ] = useState(null);
 
-    const [equipoActual, setEquipoActual] = useState(null);
-    const [integrantes, setIntegrantes] = useState([]);
+    const [
+        jugadores,
+        setJugadores
+    ] = useState([]);
 
-    const [nombreEquipo, setNombreEquipo] = useState("");
-    const [juegoEquipo, setJuegoEquipo] = useState("");
+    const [
+        juegos,
+        setJuegos
+    ] = useState([]);
 
-    const [nuevoIntegrante, setNuevoIntegrante] = useState("");
-    const [rolIntegrante, setRolIntegrante] = useState("");
+    const [
+        equipoActual,
+        setEquipoActual
+    ] = useState(null);
 
-    const [mensaje, setMensaje] = useState("");
-    const [cargando, setCargando] = useState(true);
+    const [
+        integrantes,
+        setIntegrantes
+    ] = useState([]);
+
+    const [
+        nombreEquipo,
+        setNombreEquipo
+    ] = useState("");
+
+    const [
+        juegoEquipo,
+        setJuegoEquipo
+    ] = useState("");
+
+    const [
+        nuevoIntegrante,
+        setNuevoIntegrante
+    ] = useState("");
+
+    const [
+        rolIntegrante,
+        setRolIntegrante
+    ] = useState("");
+
+    const [
+        mensaje,
+        setMensaje
+    ] = useState("");
+
+    const [
+        cargando,
+        setCargando
+    ] = useState(true);
 
 
     useEffect(function () {
 
-        equiposService.obtenerDatosEquipo()
+        equiposService
+            .obtenerDatosEquipo()
             .then(function (datos) {
 
-                setUsuario(datos.usuario);
-
-                setJugadores(
-                    datos.jugadores.filter(function (jugador) {
-                        return jugador.estado === "ACTIVO";
-                    })
+                setUsuario(
+                    datos.usuario
                 );
 
+
+                setJugadores(
+                    datos.jugadores.filter(
+                        function (jugador) {
+
+                            return (
+                                jugador.estado ===
+                                "ACTIVO"
+                            );
+
+                        }
+                    )
+                );
+
+
                 setJuegos(
-                    datos.juegos.filter(function (juego) {
-                        return juego.estado === true;
-                    })
+                    datos.juegos.filter(
+                        function (juego) {
+
+                            return (
+                                juego.estado ===
+                                true
+                            );
+
+                        }
+                    )
                 );
 
 
                 const equipoActivo =
-                    datos.equipos.find(function (equipo) {
-                        return equipo.estado === "ACTIVO";
-                    });
+                    datos.equipos.find(
+                        function (equipo) {
+
+                            return (
+                                equipo.estado ===
+                                "ACTIVO"
+                            );
+
+                        }
+                    );
 
 
                 if (equipoActivo) {
 
-                    setEquipoActual(equipoActivo);
+                    setEquipoActual(
+                        equipoActivo
+                    );
+
 
                     setNombreEquipo(
                         equipoActivo.nombre
                     );
 
+
                     setJuegoEquipo(
                         String(
-                            equipoActivo.juegoPrincipalId
+                            equipoActivo
+                                .juegoPrincipalId
                         )
                     );
 
+
                     setIntegrantes(
-                        equipoActivo.miembros || []
+                        equipoActivo.miembros ||
+                        []
                     );
+
                 }
 
             })
             .catch(function (error) {
 
-                setMensaje(error.message);
+                setMensaje(
+                    error.message
+                );
 
             })
             .finally(function () {
 
-                setCargando(false);
+                setCargando(
+                    false
+                );
 
             });
 
@@ -88,86 +182,138 @@ function FormularioEquipo() {
 
 
     const jugadoresDisponibles =
-        useMemo(function () {
+        useMemo(
+            function () {
 
-            return jugadores.filter(function (jugador) {
+                return jugadores.filter(
+                    function (jugador) {
 
-                if (
-                    usuario &&
-                    jugador.id === usuario.id
-                ) {
-                    return false;
-                }
+                        if (
+                            usuario &&
+                            jugador.id ===
+                            usuario.id
+                        ) {
 
+                            return false;
 
-                const yaPertenece =
-                    integrantes.some(function (miembro) {
-                        return (
-                            miembro.usuarioId ===
-                            jugador.id
-                        );
-                    });
+                        }
 
 
-                return !yaPertenece;
+                        const yaPertenece =
+                            integrantes.some(
+                                function (
+                                    miembro
+                                ) {
 
-            });
+                                    return (
+                                        miembro.usuarioId ===
+                                        jugador.id
+                                    );
 
-        }, [
-            jugadores,
-            integrantes,
-            usuario
-        ]);
-
-
-    const integrantesVisuales =
-        integrantes.map(function (miembro) {
-
-            const jugador =
-                jugadores.find(function (item) {
-                    return (
-                        item.id ===
-                        miembro.usuarioId
-                    );
-                });
+                                }
+                            );
 
 
-            return {
-                ...miembro,
+                        return !yaPertenece;
 
-                jugador:
-                    jugador
-                        ? jugador.nickname
-                        : `Usuario ${miembro.usuarioId}`,
+                    }
+                );
 
-                rol:
-                    formatearRol(
-                        miembro.rolDentroEquipo
-                    )
-            };
-
-        });
+            },
+            [
+                jugadores,
+                integrantes,
+                usuario
+            ]
+        );
 
 
-    function formatearRol(rol) {
+    function formatearRol(
+        rol
+    ) {
 
-        if (rol === "CAPITAN") {
+        if (
+            rol === "CAPITAN"
+        ) {
             return "Capitán";
         }
 
-        if (rol === "TITULAR") {
+
+        if (
+            rol === "TITULAR"
+        ) {
             return "Titular";
         }
 
-        if (rol === "SUPLENTE") {
+
+        if (
+            rol === "SUPLENTE"
+        ) {
             return "Suplente";
         }
+
 
         return rol;
     }
 
 
-    async function crearEquipo(event) {
+    const integrantesVisuales =
+        integrantes.map(
+            function (miembro) {
+
+                const jugador =
+                    jugadores.find(
+                        function (item) {
+
+                            return (
+                                item.id ===
+                                miembro.usuarioId
+                            );
+
+                        }
+                    );
+
+
+                return {
+
+                    ...miembro,
+
+                    jugador:
+                        jugador
+                            ? jugador.nickname
+                            : `Usuario ${miembro.usuarioId}`,
+
+                    rol:
+                        formatearRol(
+                            miembro.rolDentroEquipo
+                        )
+
+                };
+
+            }
+        );
+
+
+    const juegoActual =
+        juegos.find(
+            function (juego) {
+
+                return (
+                    String(
+                        juego.id
+                    ) ===
+                    String(
+                        juegoEquipo
+                    )
+                );
+
+            }
+        );
+
+
+    async function crearEquipo(
+        event
+    ) {
 
         event.preventDefault();
 
@@ -184,7 +330,10 @@ function FormularioEquipo() {
         }
 
 
-        if (nombreEquipo.trim() === "") {
+        if (
+            nombreEquipo.trim() ===
+            ""
+        ) {
 
             setMensaje(
                 "Debes ingresar un nombre para el equipo."
@@ -194,7 +343,10 @@ function FormularioEquipo() {
         }
 
 
-        if (juegoEquipo === "") {
+        if (
+            juegoEquipo ===
+            ""
+        ) {
 
             setMensaje(
                 "Debes seleccionar un juego principal."
@@ -213,16 +365,22 @@ function FormularioEquipo() {
                 usuario.id,
 
             juegoPrincipalId:
-                Number(juegoEquipo),
+                Number(
+                    juegoEquipo
+                ),
 
             miembros: [
+
                 {
+
                     usuarioId:
                         usuario.id,
 
                     rolDentroEquipo:
                         "CAPITAN"
+
                 }
+
             ]
 
         };
@@ -231,22 +389,27 @@ function FormularioEquipo() {
         try {
 
             const equipoCreado =
-                await equiposService.crearEquipo(
-                    nuevoEquipo
-                );
+                await equiposService
+                    .crearEquipo(
+                        nuevoEquipo
+                    );
 
 
             setEquipoActual(
                 equipoCreado
             );
 
+
             setIntegrantes(
-                equipoCreado.miembros || []
+                equipoCreado.miembros ||
+                []
             );
+
 
             setMensaje(
                 "Equipo creado correctamente."
             );
+
 
         } catch (error) {
 
@@ -273,7 +436,10 @@ function FormularioEquipo() {
         }
 
 
-        if (nuevoIntegrante === "") {
+        if (
+            nuevoIntegrante ===
+            ""
+        ) {
 
             setMensaje(
                 "Debes seleccionar un jugador."
@@ -283,7 +449,10 @@ function FormularioEquipo() {
         }
 
 
-        if (rolIntegrante === "") {
+        if (
+            rolIntegrante ===
+            ""
+        ) {
 
             setMensaje(
                 "Debes seleccionar un rol."
@@ -296,7 +465,9 @@ function FormularioEquipo() {
         const miembro = {
 
             usuarioId:
-                Number(nuevoIntegrante),
+                Number(
+                    nuevoIntegrante
+                ),
 
             rolDentroEquipo:
                 rolIntegrante
@@ -307,28 +478,37 @@ function FormularioEquipo() {
         try {
 
             const miembroCreado =
-                await equiposService.agregarMiembro(
-                    equipoActual.id,
-                    miembro
-                );
+                await equiposService
+                    .agregarMiembro(
+                        equipoActual.id,
+                        miembro
+                    );
 
 
-            setIntegrantes(function (anteriores) {
+            setIntegrantes(
+                function (
+                    anteriores
+                ) {
 
-                return [
-                    ...anteriores,
-                    miembroCreado
-                ];
+                    return [
 
-            });
+                        ...anteriores,
+                        miembroCreado
+
+                    ];
+
+                }
+            );
 
 
             setNuevoIntegrante("");
             setRolIntegrante("");
 
+
             setMensaje(
                 "Integrante agregado correctamente."
             );
+
 
         } catch (error) {
 
@@ -354,7 +534,8 @@ function FormularioEquipo() {
 
 
         if (
-            integrante.rolDentroEquipo ===
+            integrante
+                .rolDentroEquipo ===
             "CAPITAN"
         ) {
 
@@ -368,31 +549,39 @@ function FormularioEquipo() {
 
         try {
 
-            await equiposService.eliminarMiembro(
-                equipoActual.id,
-                integrante.id
-            );
-
-
-            setIntegrantes(function (anteriores) {
-
-                return anteriores.filter(
-                    function (miembro) {
-
-                        return (
-                            miembro.id !==
-                            integrante.id
-                        );
-
-                    }
+            await equiposService
+                .eliminarMiembro(
+                    equipoActual.id,
+                    integrante.id
                 );
 
-            });
+
+            setIntegrantes(
+                function (
+                    anteriores
+                ) {
+
+                    return anteriores.filter(
+                        function (
+                            miembro
+                        ) {
+
+                            return (
+                                miembro.id !==
+                                integrante.id
+                            );
+
+                        }
+                    );
+
+                }
+            );
 
 
             setMensaje(
                 "Integrante eliminado correctamente."
             );
+
 
         } catch (error) {
 
@@ -414,24 +603,45 @@ function FormularioEquipo() {
         }
 
 
-        try {
-
-            await equiposService.eliminarEquipo(
-                equipoActual.id
+        const confirmar =
+            window.confirm(
+                `¿Deseas eliminar el equipo "${equipoActual.nombre}"?`
             );
 
 
-            setEquipoActual(null);
-            setIntegrantes([]);
+        if (!confirmar) {
+            return;
+        }
+
+
+        try {
+
+            await equiposService
+                .eliminarEquipo(
+                    equipoActual.id
+                );
+
+
+            setEquipoActual(
+                null
+            );
+
+
+            setIntegrantes(
+                []
+            );
+
 
             setNombreEquipo("");
             setJuegoEquipo("");
             setNuevoIntegrante("");
             setRolIntegrante("");
 
+
             setMensaje(
                 "Equipo eliminado correctamente."
             );
+
 
         } catch (error) {
 
@@ -447,17 +657,18 @@ function FormularioEquipo() {
 
         return (
 
-            <section className="card mb-4">
+            <div className="equipo-cargando">
 
-                <div className="card-body">
+                <div
+                    className="spinner-border"
+                    role="status"
+                />
 
-                    <p className="mb-0">
-                        Cargando información de equipos...
-                    </p>
+                <p>
+                    Cargando información del equipo...
+                </p>
 
-                </div>
-
-            </section>
+            </div>
 
         );
     }
@@ -467,339 +678,543 @@ function FormularioEquipo() {
 
         <>
 
-            <section className="card mb-4">
 
-                <div className="card-body">
+            {!equipoActual && (
 
-                    <h2 className="card-title">
-                        Gestión de equipo
-                    </h2>
+                <section className="equipo-crear">
 
 
-                    <p className="card-text">
+                    <div className="equipo-crear-intro">
 
-                        Crea tu equipo y administra
-                        sus integrantes.
-
-                    </p>
-
-
-                    <form onSubmit={crearEquipo}>
-
-                        <div className="row g-3">
+                        <span className="seccion-etiqueta">
+                            NUEVA ESCUADRA
+                        </span>
 
 
-                            <div className="col-12 col-md-4">
-
-                                <label
-                                    htmlFor="nombre-equipo"
-                                    className="form-label"
-                                >
-                                    Nombre del equipo:
-                                </label>
+                        <h1>
+                            Crea tu equipo
+                        </h1>
 
 
-                                <input
-                                    id="nombre-equipo"
-                                    type="text"
-                                    className="form-control"
-                                    value={nombreEquipo}
-                                    disabled={
-                                        equipoActual !== null
+                        <p>
+                            Forma tu propia escuadra,
+                            elige tu juego principal
+                            y comienza a competir.
+                        </p>
+
+                    </div>
+
+
+                    <form
+                        onSubmit={
+                            crearEquipo
+                        }
+                        className="equipo-crear-formulario"
+                    >
+
+                        <div>
+
+                            <label
+                                htmlFor="nombre-equipo"
+                                className="form-label"
+                            >
+                                Nombre del equipo
+                            </label>
+
+
+                            <input
+                                id="nombre-equipo"
+                                type="text"
+                                className="form-control"
+                                value={nombreEquipo}
+                                placeholder="Ej: Shadow Wolves"
+                                onChange={
+                                    function (
+                                        event
+                                    ) {
+
+                                        setNombreEquipo(
+                                            event.target.value
+                                        );
+
+                                        setMensaje("");
+
                                     }
-                                    onChange={
-                                        function (event) {
+                                }
+                            />
 
-                                            setNombreEquipo(
-                                                event.target.value
-                                            );
+                        </div>
 
-                                            setMensaje("");
 
-                                        }
+                        <div>
+
+                            <label
+                                htmlFor="juego-equipo"
+                                className="form-label"
+                            >
+                                Juego principal
+                            </label>
+
+
+                            <select
+                                id="juego-equipo"
+                                className="form-select"
+                                value={juegoEquipo}
+                                onChange={
+                                    function (
+                                        event
+                                    ) {
+
+                                        setJuegoEquipo(
+                                            event.target.value
+                                        );
+
+                                        setMensaje("");
+
                                     }
-                                />
+                                }
+                            >
 
-                            </div>
-
-
-                            <div className="col-12 col-md-4">
-
-                                <label
-                                    htmlFor="juego-equipo"
-                                    className="form-label"
-                                >
-                                    Juego principal:
-                                </label>
+                                <option value="">
+                                    Selecciona un juego
+                                </option>
 
 
-                                <select
-                                    id="juego-equipo"
-                                    className="form-select"
-                                    value={juegoEquipo}
-                                    disabled={
-                                        equipoActual !== null
-                                    }
-                                    onChange={
-                                        function (event) {
-
-                                            setJuegoEquipo(
-                                                event.target.value
-                                            );
-
-                                            setMensaje("");
-
-                                        }
-                                    }
-                                >
-
-                                    <option value="">
-                                        Selecciona un juego
-                                    </option>
-
-
-                                    {juegos.map(
-                                        function (juego) {
+                                {
+                                    juegos.map(
+                                        function (
+                                            juego
+                                        ) {
 
                                             return (
 
                                                 <option
-                                                    key={juego.id}
-                                                    value={juego.id}
+                                                    key={
+                                                        juego.id
+                                                    }
+                                                    value={
+                                                        juego.id
+                                                    }
                                                 >
-                                                    {juego.nombre}
+                                                    {
+                                                        juego.nombre
+                                                    }
                                                 </option>
 
                                             );
 
                                         }
-                                    )}
+                                    )
+                                }
 
-                                </select>
+                            </select>
 
-                            </div>
-
-
-                            <div className="col-12 col-md-4">
-
-                                <label
-                                    className="form-label"
-                                >
-                                    Capitán:
-                                </label>
+                        </div>
 
 
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={
-                                        usuario
-                                            ? usuario.nickname
-                                            : ""
-                                    }
-                                    disabled
-                                />
+                        <div>
 
-                            </div>
+                            <label
+                                className="form-label"
+                            >
+                                Capitán
+                            </label>
+
+
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={
+                                    usuario
+                                        ? usuario.nickname
+                                        : ""
+                                }
+                                disabled
+                            />
 
                         </div>
 
 
                         <button
                             type="submit"
-                            className="btn btn-primary mt-3"
-                            disabled={
-                                equipoActual !== null
-                            }
+                            className="btn btn-primary"
                         >
-
-                            {
-                                equipoActual
-                                    ? "Equipo creado"
-                                    : "Crear equipo"
-                            }
-
+                            Crear equipo
+                            <span>
+                                →
+                            </span>
                         </button>
 
                     </form>
 
-                </div>
+                </section>
 
-            </section>
+            )}
 
 
             {equipoActual && (
 
-                <section className="card mb-4">
-
-                    <div className="card-body">
+                <>
 
 
-                        <div
-                            className="
-                                d-flex
-                                justify-content-between
-                                align-items-center
-                                flex-wrap
-                                gap-2
-                                mb-3
-                            "
-                        >
+                    {/* HERO EQUIPO */}
 
-                            <h2 className="card-title mb-0">
+                    <section className="equipo-hero">
 
-                                Integrantes de{" "}
-                                {equipoActual.nombre}
-
-                            </h2>
+                        <div className="equipo-hero-decoracion" />
 
 
-                            <button
-                                type="button"
-                                className="btn btn-danger"
-                                onClick={borrarEquipo}
-                            >
-                                Eliminar equipo
-                            </button>
+                        <div className="equipo-identidad">
+
+                            <div className="equipo-logo">
+
+                                {
+                                    obtenerInicial(
+                                        equipoActual.nombre
+                                    )
+                                }
+
+                            </div>
+
+
+                            <div>
+
+                                <span className="seccion-etiqueta">
+                                    MI ESCUADRA
+                                </span>
+
+
+                                <h1>
+                                    {
+                                        equipoActual.nombre
+                                    }
+                                </h1>
+
+
+                                <div className="equipo-etiquetas">
+
+                                    <span className="equipo-badge activo">
+                                        ACTIVO
+                                    </span>
+
+
+                                    <span className="equipo-badge capitan">
+                                        CAPITÁN:{" "}
+                                        {
+                                            usuario
+                                                ? usuario.nickname
+                                                : ""
+                                        }
+                                    </span>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
 
-                        <div
-                            className="
-                                row
-                                g-3
-                                align-items-end
-                                mb-4
-                            "
-                        >
+                        <div className="equipo-hero-resumen">
 
 
-                            <div className="col-12 col-md-5">
+                            <div>
 
-                                <label
-                                    htmlFor="nuevo-integrante"
-                                    className="form-label"
-                                >
-                                    Agregar jugador:
-                                </label>
+                                <span>
+                                    JUEGO
+                                </span>
 
-
-                                <select
-                                    id="nuevo-integrante"
-                                    className="form-select"
-                                    value={nuevoIntegrante}
-                                    onChange={
-                                        function (event) {
-
-                                            setNuevoIntegrante(
-                                                event.target.value
-                                            );
-
-                                            setMensaje("");
-
-                                        }
+                                <strong>
+                                    {
+                                        juegoActual
+                                            ? juegoActual.nombre
+                                            : "Sin juego"
                                     }
-                                >
-
-                                    <option value="">
-                                        Selecciona un jugador
-                                    </option>
-
-
-                                    {jugadoresDisponibles.map(
-                                        function (jugador) {
-
-                                            return (
-
-                                                <option
-                                                    key={jugador.id}
-                                                    value={jugador.id}
-                                                >
-                                                    {jugador.nickname}
-                                                </option>
-
-                                            );
-
-                                        }
-                                    )}
-
-                                </select>
+                                </strong>
 
                             </div>
 
 
-                            <div className="col-12 col-md-4">
+                            <div>
 
-                                <label
-                                    htmlFor="rol-integrante"
-                                    className="form-label"
-                                >
-                                    Rol:
-                                </label>
+                                <span>
+                                    INTEGRANTES
+                                </span>
 
-
-                                <select
-                                    id="rol-integrante"
-                                    className="form-select"
-                                    value={rolIntegrante}
-                                    onChange={
-                                        function (event) {
-
-                                            setRolIntegrante(
-                                                event.target.value
-                                            );
-
-                                            setMensaje("");
-
-                                        }
+                                <strong>
+                                    {
+                                        integrantes.length
                                     }
-                                >
-
-                                    <option value="">
-                                        Selecciona un rol
-                                    </option>
-
-                                    <option value="TITULAR">
-                                        Titular
-                                    </option>
-
-                                    <option value="SUPLENTE">
-                                        Suplente
-                                    </option>
-
-                                </select>
+                                </strong>
 
                             </div>
 
 
-                            <div className="col-12 col-md-3">
+                            <div>
+
+                                <span>
+                                    ESTADO
+                                </span>
+
+                                <strong>
+                                    {
+                                        equipoActual.estado
+                                    }
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <div className="equipo-layout">
+
+
+                        {/* CONTENIDO */}
+
+                        <div className="equipo-contenido">
+
+
+                            <section className="equipo-seccion">
+
+                                <div className="equipo-seccion-cabecera">
+
+                                    <div>
+
+                                        <span className="seccion-etiqueta">
+                                            ROSTER
+                                        </span>
+
+
+                                        <h2>
+                                            Integrantes
+                                        </h2>
+
+
+                                        <p>
+                                            Administra los jugadores
+                                            y roles de tu escuadra.
+                                        </p>
+
+                                    </div>
+
+
+                                    <span className="equipo-contador">
+
+                                        {
+                                            integrantes.length
+                                        }
+
+                                        {" miembros"}
+
+                                    </span>
+
+                                </div>
+
+
+                                <ListaIntegrantes
+                                    integrantes={
+                                        integrantesVisuales
+                                    }
+                                    onQuitar={
+                                        quitarIntegrante
+                                    }
+                                />
+
+                            </section>
+
+                        </div>
+
+
+                        {/* SIDEBAR */}
+
+                        <aside className="equipo-sidebar">
+
+
+                            <section className="equipo-agregar">
+
+                                <span className="seccion-etiqueta">
+                                    NUEVO MIEMBRO
+                                </span>
+
+
+                                <h2>
+                                    Agregar jugador
+                                </h2>
+
+
+                                <p>
+                                    Incorpora un jugador
+                                    disponible y asígnale
+                                    un rol.
+                                </p>
+
+
+                                <div>
+
+                                    <label
+                                        htmlFor="nuevo-integrante"
+                                        className="form-label"
+                                    >
+                                        Jugador
+                                    </label>
+
+
+                                    <select
+                                        id="nuevo-integrante"
+                                        className="form-select"
+                                        value={
+                                            nuevoIntegrante
+                                        }
+                                        onChange={
+                                            function (
+                                                event
+                                            ) {
+
+                                                setNuevoIntegrante(
+                                                    event.target.value
+                                                );
+
+                                                setMensaje("");
+
+                                            }
+                                        }
+                                    >
+
+                                        <option value="">
+                                            Selecciona un jugador
+                                        </option>
+
+
+                                        {
+                                            jugadoresDisponibles.map(
+                                                function (
+                                                    jugador
+                                                ) {
+
+                                                    return (
+
+                                                        <option
+                                                            key={
+                                                                jugador.id
+                                                            }
+                                                            value={
+                                                                jugador.id
+                                                            }
+                                                        >
+                                                            {
+                                                                jugador.nickname
+                                                            }
+                                                        </option>
+
+                                                    );
+
+                                                }
+                                            )
+                                        }
+
+                                    </select>
+
+                                </div>
+
+
+                                <div>
+
+                                    <label
+                                        htmlFor="rol-integrante"
+                                        className="form-label"
+                                    >
+                                        Rol
+                                    </label>
+
+
+                                    <select
+                                        id="rol-integrante"
+                                        className="form-select"
+                                        value={
+                                            rolIntegrante
+                                        }
+                                        onChange={
+                                            function (
+                                                event
+                                            ) {
+
+                                                setRolIntegrante(
+                                                    event.target.value
+                                                );
+
+                                                setMensaje("");
+
+                                            }
+                                        }
+                                    >
+
+                                        <option value="">
+                                            Selecciona un rol
+                                        </option>
+
+                                        <option value="TITULAR">
+                                            Titular
+                                        </option>
+
+                                        <option value="SUPLENTE">
+                                            Suplente
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
 
                                 <button
                                     type="button"
                                     className="btn btn-primary w-100"
-                                    onClick={agregarIntegrante}
+                                    onClick={
+                                        agregarIntegrante
+                                    }
                                 >
-                                    Agregar
+                                    Agregar integrante
                                 </button>
 
-                            </div>
-
-                        </div>
+                            </section>
 
 
-                        <ListaIntegrantes
-                            integrantes={
-                                integrantesVisuales
-                            }
-                            onQuitar={
-                                quitarIntegrante
-                            }
-                        />
+                            <section className="equipo-zona-peligro">
+
+                                <span className="seccion-etiqueta">
+                                    ADMINISTRACIÓN
+                                </span>
+
+
+                                <h3>
+                                    Eliminar equipo
+                                </h3>
+
+
+                                <p>
+                                    Esta acción desactivará
+                                    la escuadra actual.
+                                </p>
+
+
+                                <button
+                                    type="button"
+                                    className="btn btn-danger w-100"
+                                    onClick={
+                                        borrarEquipo
+                                    }
+                                >
+                                    Eliminar equipo
+                                </button>
+
+                            </section>
+
+                        </aside>
 
                     </div>
 
-                </section>
+                </>
 
             )}
 
@@ -808,11 +1223,13 @@ function FormularioEquipo() {
 
                 <div
                     className={
-                        mensaje.includes(
-                            "correctamente"
-                        )
-                            ? "alert alert-success"
-                            : "alert alert-danger"
+                        `equipo-mensaje ${
+                            mensaje.includes(
+                                "correctamente"
+                            )
+                                ? "exito"
+                                : "error"
+                        }`
                     }
                     role="alert"
                 >

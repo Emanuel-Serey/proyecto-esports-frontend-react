@@ -1,5 +1,6 @@
 import {
     useEffect,
+    useMemo,
     useState
 } from "react";
 
@@ -19,38 +20,60 @@ import GestionTorneosAdmin
 import GestionPremiosAdmin
     from "../components/GestionPremiosAdmin.jsx";
 
+import "./panel-admin.css";
+
 
 function PanelAdmin() {
 
-    const [usuarios, setUsuarios] =
-        useState([]);
+    const [
+        usuarios,
+        setUsuarios
+    ] = useState([]);
 
-    const [cuentas, setCuentas] =
-        useState([]);
+    const [
+        cuentas,
+        setCuentas
+    ] = useState([]);
 
-    const [juegos, setJuegos] =
-        useState([]);
+    const [
+        juegos,
+        setJuegos
+    ] = useState([]);
 
-    const [torneos, setTorneos] =
-        useState([]);
+    const [
+        torneos,
+        setTorneos
+    ] = useState([]);
 
-    const [premios, setPremios] =
-        useState([]);
+    const [
+        premios,
+        setPremios
+    ] = useState([]);
 
-    const [rankings, setRankings] =
-        useState([]);
+    const [
+        rankings,
+        setRankings
+    ] = useState([]);
 
-    const [inscripciones, setInscripciones] =
-        useState([]);
+    const [
+        inscripciones,
+        setInscripciones
+    ] = useState([]);
 
-    const [equipos, setEquipos] =
-        useState([]);
+    const [
+        equipos,
+        setEquipos
+    ] = useState([]);
 
-    const [cargando, setCargando] =
-        useState(true);
+    const [
+        cargando,
+        setCargando
+    ] = useState(true);
 
-    const [error, setError] =
-        useState("");
+    const [
+        error,
+        setError
+    ] = useState("");
 
 
     async function cargarDatos() {
@@ -119,30 +142,116 @@ function PanelAdmin() {
     }
 
 
-    useEffect(function () {
+    useEffect(
+        function () {
 
-        cargarDatos();
+            cargarDatos();
 
-    }, []);
+        },
+        []
+    );
+
+
+    const usuariosActivos =
+        useMemo(
+            function () {
+
+                return usuarios.filter(
+                    function (usuario) {
+
+                        return (
+                            usuario.estado ===
+                            "ACTIVO"
+                        );
+
+                    }
+                ).length;
+
+            },
+            [usuarios]
+        );
+
+
+    const juegosActivos =
+        useMemo(
+            function () {
+
+                return juegos.filter(
+                    function (juego) {
+
+                        return (
+                            juego.estado ===
+                            true
+                        );
+
+                    }
+                ).length;
+
+            },
+            [juegos]
+        );
+
+
+    const torneosActivos =
+        useMemo(
+            function () {
+
+                return torneos.filter(
+                    function (torneo) {
+
+                        return (
+                            torneo.estado ===
+                                "ABIERTO" ||
+                            torneo.estado ===
+                                "EN_CURSO"
+                        );
+
+                    }
+                ).length;
+
+            },
+            [torneos]
+        );
+
+
+    const premiosPendientes =
+        useMemo(
+            function () {
+
+                return premios.filter(
+                    function (premio) {
+
+                        return (
+                            premio.estadoEntrega ===
+                            "PENDIENTE"
+                        );
+
+                    }
+                ).length;
+
+            },
+            [premios]
+        );
 
 
     if (cargando) {
 
         return (
 
-            <main className="container py-4">
+            <main className="admin-page">
 
-                <section className="card">
+                <div className="admin-cargando">
 
-                    <div className="card-body">
+                    <div
+                        className="spinner-border"
+                        role="status"
+                    />
 
-                        <p className="mb-0">
-                            Cargando panel de administración...
-                        </p>
+                    <p>
+                        Cargando panel de administración...
+                    </p>
 
-                    </div>
-
-                </section>
+                </div>
 
             </main>
 
@@ -152,22 +261,51 @@ function PanelAdmin() {
 
     return (
 
-        <main className="container py-4">
+        <main className="admin-page">
 
 
-            <section className="card mb-4">
+            {/* =========================
+                CABECERA
+            ========================= */}
 
-                <div className="card-body">
+            <section className="admin-hero">
 
-                    <h2 className="card-title">
-                        Panel de administración
-                    </h2>
+                <div>
+
+                    <span className="seccion-etiqueta">
+                        ADMINISTRACIÓN
+                    </span>
 
 
-                    <p className="card-text mb-0">
+                    <h1>
+                        Centro de control
+                    </h1>
+
+
+                    <p>
                         Gestiona usuarios, juegos,
-                        torneos y premios.
+                        torneos y premios desde
+                        un único lugar.
                     </p>
+
+                </div>
+
+
+                <div className="admin-hero-estado">
+
+                    <span className="admin-estado-punto" />
+
+                    <div>
+
+                        <strong>
+                            Sistema operativo
+                        </strong>
+
+                        <small>
+                            Panel administrativo
+                        </small>
+
+                    </div>
 
                 </div>
 
@@ -186,124 +324,368 @@ function PanelAdmin() {
             )}
 
 
-            <section className="row g-3 mb-4">
+            {/* =========================
+                KPIs
+            ========================= */}
+
+            <section className="admin-kpis">
 
 
-                <div className="col-12 col-md-6 col-lg-3">
+                <article>
 
-                    <article className="card h-100">
-
-                        <div className="card-body">
-
-                            <h3 className="h5">
-                                Usuarios
-                            </h3>
-
-                            <p className="fs-3 mb-0">
-                                {usuarios.length}
-                            </p>
-
-                        </div>
-
-                    </article>
-
-                </div>
+                    <div className="admin-kpi-icono">
+                        U
+                    </div>
 
 
-                <div className="col-12 col-md-6 col-lg-3">
+                    <div>
 
-                    <article className="card h-100">
+                        <span>
+                            USUARIOS
+                        </span>
 
-                        <div className="card-body">
+                        <strong>
+                            {
+                                usuarios.length
+                            }
+                        </strong>
 
-                            <h3 className="h5">
-                                Juegos
-                            </h3>
+                        <small>
+                            {
+                                usuariosActivos
+                            } activos
+                        </small>
 
-                            <p className="fs-3 mb-0">
-                                {juegos.length}
-                            </p>
+                    </div>
 
-                        </div>
-
-                    </article>
-
-                </div>
-
-
-                <div className="col-12 col-md-6 col-lg-3">
-
-                    <article className="card h-100">
-
-                        <div className="card-body">
-
-                            <h3 className="h5">
-                                Torneos
-                            </h3>
-
-                            <p className="fs-3 mb-0">
-                                {torneos.length}
-                            </p>
-
-                        </div>
-
-                    </article>
-
-                </div>
+                </article>
 
 
-                <div className="col-12 col-md-6 col-lg-3">
+                <article>
 
-                    <article className="card h-100">
+                    <div className="admin-kpi-icono">
+                        G
+                    </div>
 
-                        <div className="card-body">
 
-                            <h3 className="h5">
-                                Premios
-                            </h3>
+                    <div>
 
-                            <p className="fs-3 mb-0">
-                                {premios.length}
-                            </p>
+                        <span>
+                            JUEGOS
+                        </span>
 
-                        </div>
+                        <strong>
+                            {
+                                juegos.length
+                            }
+                        </strong>
 
-                    </article>
+                        <small>
+                            {
+                                juegosActivos
+                            } activos
+                        </small>
 
-                </div>
+                    </div>
+
+                </article>
+
+
+                <article>
+
+                    <div className="admin-kpi-icono">
+                        T
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            TORNEOS
+                        </span>
+
+                        <strong>
+                            {
+                                torneos.length
+                            }
+                        </strong>
+
+                        <small>
+                            {
+                                torneosActivos
+                            } activos
+                        </small>
+
+                    </div>
+
+                </article>
+
+
+                <article>
+
+                    <div className="admin-kpi-icono">
+                        P
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            PREMIOS
+                        </span>
+
+                        <strong>
+                            {
+                                premios.length
+                            }
+                        </strong>
+
+                        <small>
+                            {
+                                premiosPendientes
+                            } pendientes
+                        </small>
+
+                    </div>
+
+                </article>
 
             </section>
 
 
-            <GestionUsuariosAdmin
-                usuarios={usuarios}
-                cuentas={cuentas}
-                onRecargar={cargarDatos}
-            />
+            {/* =========================
+                NAVEGACIÓN RÁPIDA
+            ========================= */}
+
+            <nav className="admin-nav">
+
+                <a
+                    href="#admin-usuarios"
+                >
+                    <span>
+                        01
+                    </span>
+
+                    Usuarios
+                </a>
 
 
-            <GestionJuegosAdmin
-                juegos={juegos}
-                onRecargar={cargarDatos}
-            />
+                <a
+                    href="#admin-juegos"
+                >
+                    <span>
+                        02
+                    </span>
+
+                    Juegos
+                </a>
 
 
-            <GestionTorneosAdmin
-                torneos={torneos}
-                juegos={juegos}
-                onRecargar={cargarDatos}
-            />
+                <a
+                    href="#admin-torneos"
+                >
+                    <span>
+                        03
+                    </span>
+
+                    Torneos
+                </a>
 
 
-            <GestionPremiosAdmin
-                premios={premios}
-                torneos={torneos}
-                rankings={rankings}
-                inscripciones={inscripciones}
-                usuarios={usuarios}
-                equipos={equipos}
-                onRecargar={cargarDatos}
-            />
+                <a
+                    href="#admin-premios"
+                >
+                    <span>
+                        04
+                    </span>
+
+                    Premios
+                </a>
+
+            </nav>
+
+
+            {/* =========================
+                MÓDULOS
+            ========================= */}
+
+            <div
+                id="admin-usuarios"
+                className="admin-modulo"
+            >
+
+                <div className="admin-modulo-cabecera">
+
+                    <div>
+
+                        <span className="seccion-etiqueta">
+                            USUARIOS
+                        </span>
+
+                        <h2>
+                            Gestión de usuarios
+                        </h2>
+
+                    </div>
+
+
+                    <span className="admin-modulo-contador">
+
+                        {
+                            usuarios.length
+                        }
+
+                        {" registros"}
+
+                    </span>
+
+                </div>
+
+
+                <GestionUsuariosAdmin
+                    usuarios={usuarios}
+                    cuentas={cuentas}
+                    onRecargar={
+                        cargarDatos
+                    }
+                />
+
+            </div>
+
+
+            <div
+                id="admin-juegos"
+                className="admin-modulo"
+            >
+
+                <div className="admin-modulo-cabecera">
+
+                    <div>
+
+                        <span className="seccion-etiqueta">
+                            CATÁLOGO
+                        </span>
+
+                        <h2>
+                            Gestión de juegos
+                        </h2>
+
+                    </div>
+
+
+                    <span className="admin-modulo-contador">
+
+                        {
+                            juegos.length
+                        }
+
+                        {" juegos"}
+
+                    </span>
+
+                </div>
+
+
+                <GestionJuegosAdmin
+                    juegos={juegos}
+                    onRecargar={
+                        cargarDatos
+                    }
+                />
+
+            </div>
+
+
+            <div
+                id="admin-torneos"
+                className="admin-modulo"
+            >
+
+                <div className="admin-modulo-cabecera">
+
+                    <div>
+
+                        <span className="seccion-etiqueta">
+                            COMPETICIONES
+                        </span>
+
+                        <h2>
+                            Gestión de torneos
+                        </h2>
+
+                    </div>
+
+
+                    <span className="admin-modulo-contador">
+
+                        {
+                            torneos.length
+                        }
+
+                        {" torneos"}
+
+                    </span>
+
+                </div>
+
+
+                <GestionTorneosAdmin
+                    torneos={torneos}
+                    juegos={juegos}
+                    onRecargar={
+                        cargarDatos
+                    }
+                />
+
+            </div>
+
+
+            <div
+                id="admin-premios"
+                className="admin-modulo"
+            >
+
+                <div className="admin-modulo-cabecera">
+
+                    <div>
+
+                        <span className="seccion-etiqueta">
+                            RECOMPENSAS
+                        </span>
+
+                        <h2>
+                            Gestión de premios
+                        </h2>
+
+                    </div>
+
+
+                    <span className="admin-modulo-contador">
+
+                        {
+                            premios.length
+                        }
+
+                        {" premios"}
+
+                    </span>
+
+                </div>
+
+
+                <GestionPremiosAdmin
+                    premios={premios}
+                    torneos={torneos}
+                    rankings={rankings}
+                    inscripciones={inscripciones}
+                    usuarios={usuarios}
+                    equipos={equipos}
+                    onRecargar={
+                        cargarDatos
+                    }
+                />
+
+            </div>
 
         </main>
 

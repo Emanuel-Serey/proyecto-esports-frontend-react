@@ -1,0 +1,150 @@
+/* =========================================================
+   TORNEOS
+   ========================================================= */
+
+
+/* =========================================================
+   FILTROS - ESCRITORIO
+   ========================================================= */
+
+@media (min-width: 1101px) {
+
+    .filtros-torneos {
+        display: grid;
+
+        grid-template-columns:
+            minmax(210px, 1.7fr)
+            minmax(120px, 0.85fr)
+            minmax(120px, 0.85fr)
+            minmax(140px, 0.95fr)
+            minmax(140px, 0.95fr)
+            minmax(160px, auto);
+
+        align-items: end;
+
+        gap: 11px;
+
+        width: 100%;
+    }
+
+
+    .filtro-busqueda {
+        grid-column: auto;
+
+        min-width: 0;
+    }
+
+
+    .filtros-torneos > div {
+        min-width: 0;
+    }
+
+
+    .filtros-torneos
+    .form-control,
+    .filtros-torneos
+    .form-select {
+        width: 100%;
+
+        min-width: 0;
+    }
+
+
+    .filtro-botones {
+        grid-column: auto;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: flex-end;
+
+        gap: 7px;
+
+        min-width: 0;
+
+        margin: 0;
+    }
+
+
+    .filtro-botones
+    .btn {
+        flex:
+            0 0 auto;
+
+        padding-right: 12px;
+        padding-left: 12px;
+
+        white-space: nowrap;
+    }
+
+}
+
+
+/* =========================================================
+   TABLET / ESCRITORIO PEQUEÑO
+   ========================================================= */
+
+@media (
+    min-width: 768px
+) and (
+    max-width: 1100px
+) {
+
+    .filtros-torneos {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+
+    .filtro-busqueda {
+        grid-column:
+            1 / -1;
+    }
+
+
+    .filtro-botones {
+        grid-column:
+            1 / -1;
+
+        justify-content:
+            flex-end;
+    }
+
+}
+
+
+/* =========================================================
+   MÓVIL
+   ========================================================= */
+
+@media (max-width: 767px) {
+
+    .filtros-torneos {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .filtro-busqueda,
+    .filtro-botones {
+        grid-column: auto;
+    }
+
+
+    .filtro-botones {
+        flex-direction:
+            column;
+
+        width: 100%;
+    }
+
+
+    .filtro-botones
+    .btn {
+        width: 100%;
+    }
+
+}

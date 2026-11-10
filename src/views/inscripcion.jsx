@@ -1,15 +1,19 @@
 import FormularioInscripcion
     from "../components/FormularioInscripcion.jsx";
 
+import "./inscripcion.css";
+
 
 function Inscripcion() {
 
     return (
-        <main className="container py-4">
+
+        <main className="inscripcion-page">
 
             <FormularioInscripcion />
 
         </main>
+
     );
 }
 

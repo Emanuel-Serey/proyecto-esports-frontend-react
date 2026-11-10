@@ -1,21 +1,41 @@
-
-/* VARIABLES - PALETA ARENA PÚRPURA */
+/* =========================================================
+   PALETA
+   ========================================================= */
 
 :root {
-    --color-fondo: #0E0B16;
-    --color-superficie: #1C1430;
-    --color-primario: #9146FF;
-    --color-acento: #00F5D4;
-    --color-texto: #F1ECFF;
-    --color-error: #FF5C7A;
+    --color-fondo: #0e0b16;
+    --color-fondo-secundario: #120d20;
+    --color-superficie: #1c1430;
+    --color-superficie-clara: #261b3d;
 
-    --radio-borde: 8px;
+    --color-primario: #9146ff;
+    --color-primario-claro: #ad71ff;
+
+    --color-acento: #00f5d4;
+
+    --color-texto: #f1ecff;
+    --color-texto-secundario: #aaa3b6;
+
+    --color-error: #ff5c7a;
+    --color-exito: #00d084;
+    --color-advertencia: #ffbf47;
+
+    --radio-borde: 12px;
+    --radio-grande: 20px;
+
+    --sombra:
+        0 20px 50px rgba(0, 0, 0, 0.28);
 }
-/* GENERAL           */
+
+
+/* =========================================================
+   GENERAL
+   ========================================================= */
 
 * {
     box-sizing: border-box;
 }
+
 
 html,
 body,
@@ -23,90 +43,38 @@ body,
     min-height: 100%;
 }
 
+
 body {
     margin: 0;
-    background-color: var(--color-fondo);
+
+    background:
+        radial-gradient(
+            circle at 20% 0%,
+            rgba(145, 70, 255, 0.09),
+            transparent 32%
+        ),
+        var(--color-fondo);
+
     color: var(--color-texto);
-    font-family: Arial, sans-serif;
+
+    font-family:
+        Inter,
+        Arial,
+        sans-serif;
 }
 
-/* ENCABEZADO / NAVEGACIÓN    */
 
-.navbar {
-    background-color: var(--color-superficie);
-    padding: 20px 0;
-}
-
-.navbar-brand {
-    color: var(--color-texto);
-    font-weight: bold;
-}
-
-.navbar-brand:hover,
-.navbar-brand:focus {
+a {
     color: var(--color-acento);
 }
-
-.navbar .nav-link {
-    color: var(--color-texto);
-}
-
-.navbar .nav-link:hover,
-.navbar .nav-link.active {
-    color: var(--color-acento);
-}
-
-
-@media (min-width: 768px) {
-
-    .navbar .container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .navbar-brand {
-        margin-right: 0;
-        margin-bottom: 12px;
-        font-size: 28px;
-    }
-
-    .navbar-collapse {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .navbar-nav {
-        margin-left: 0 !important;
-        gap: 25px;
-    }
-}
-
-/* CONTENIDO PRINCIPAL     */
 
 
 main.container {
-    max-width: 1200px;
-    padding-top: 30px !important;
-    padding-bottom: 30px !important;
+    max-width: 1240px;
+
+    padding-top: 38px !important;
+    padding-bottom: 50px !important;
 }
-
-
-/* Recuperamos las secciones de EP1 */
-
-main > section {
-    background-color: var(--color-superficie);
-    padding: 20px;
-    margin-bottom: 25px !important;
-    border-radius: var(--radio-borde);
-}
-
-
-main > section.card {
-    background-color: var(--color-superficie);
-    border: none;
-}
-
-/* TÍTULOs */
 
 
 h1,
@@ -116,301 +84,1224 @@ h4,
 h5,
 h6 {
     color: var(--color-texto);
+
+    font-weight: 700;
 }
+
+
+p {
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.encabezado-principal {
+    position: sticky;
+    top: 0;
+
+    z-index: 1000;
+
+    border-bottom:
+        1px solid rgba(145, 70, 255, 0.22);
+
+    background:
+        rgba(28, 20, 48, 0.94);
+
+    backdrop-filter:
+        blur(12px);
+}
+
+
+.navbar {
+    padding: 14px 0;
+}
+
+
+.navbar .container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    margin: 0;
+
+    color: var(--color-texto);
+
+    text-decoration: none;
+}
+
+
+.marca-icono {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 43px;
+    height: 43px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--color-primario),
+            #6530c9
+        );
+
+    color: white;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    box-shadow:
+        0 8px 25px rgba(145, 70, 255, 0.35);
+}
+
+
+.marca-texto {
+    display: flex;
+    flex-direction: column;
+
+    line-height: 1.05;
+}
+
+
+.marca-texto strong {
+    font-size: 18px;
+}
+
+
+.marca-texto small {
+    margin-top: 4px;
+
+    color: var(--color-acento);
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+}
+
+
+.navbar-nav {
+    gap: 6px;
+}
+
+
+.navbar .nav-link {
+    position: relative;
+
+    padding:
+        10px 13px !important;
+
+    border-radius: 8px;
+
+    color:
+        rgba(241, 236, 255, 0.82);
+
+    font-weight: 500;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+
+.navbar .nav-link:hover {
+    color: var(--color-acento);
+
+    background:
+        rgba(145, 70, 255, 0.1);
+}
+
+
+.navbar .nav-link.active {
+    color: var(--color-acento);
+
+    background:
+        rgba(0, 245, 212, 0.08);
+}
+
+
+.navbar-registro,
+.navbar-salir {
+    padding:
+        9px 17px !important;
+}
+
+
+/* =========================================================
+   SECCIONES GENERALES
+   ========================================================= */
+
+main > section {
+    margin-bottom: 28px;
+
+    padding: 26px;
+
+    border:
+        1px solid rgba(145, 70, 255, 0.12);
+
+    border-radius:
+        var(--radio-grande);
+
+    background:
+        var(--color-superficie);
+}
+
+
+main > section.card {
+    border:
+        1px solid rgba(145, 70, 255, 0.16);
+
+    background:
+        var(--color-superficie);
+}
+
 
 main section > h2,
 main section > .card-body > h2 {
     color: var(--color-acento);
 }
 
-.card-title {
+
+.seccion-etiqueta {
+    display: inline-block;
+
+    margin-bottom: 8px;
+
+    color: var(--color-acento);
+
+    font-size: 12px;
+    font-weight: 800;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+}
+
+
+.seccion-cabecera {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: end;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+
+.seccion-cabecera h2 {
+    margin: 0 0 5px;
+
+    font-size: 30px;
+}
+
+
+.seccion-cabecera p {
+    margin: 0;
+
+    color:
+        var(--color-texto-secundario);
+}
+
+
+/* =========================================================
+   HERO TORNEOS
+   ========================================================= */
+
+.torneos-hero {
+    position: relative;
+
+    overflow: hidden;
+
+    display: grid;
+
+    grid-template-columns:
+        1.4fr 1fr;
+
+    align-items: center;
+
+    gap: 45px;
+
+    min-height: 310px;
+
+    padding:
+        42px !important;
+
+    background:
+        linear-gradient(
+            115deg,
+            rgba(28, 20, 48, 0.97) 0%,
+            rgba(39, 21, 67, 0.94) 55%,
+            rgba(22, 32, 52, 0.97) 100%
+        );
+}
+
+
+.torneos-hero::before {
+    content: "";
+
+    position: absolute;
+
+    top: -140px;
+    right: -90px;
+
+    width: 410px;
+    height: 410px;
+
+    border:
+        90px solid rgba(145, 70, 255, 0.08);
+
+    border-radius: 50%;
+}
+
+
+.torneos-hero::after {
+    content: "";
+
+    position: absolute;
+
+    right: 22%;
+    bottom: -130px;
+
+    width: 300px;
+    height: 300px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(0, 245, 212, 0.035);
+}
+
+
+.torneos-hero-contenido,
+.torneos-resumen {
+    position: relative;
+
+    z-index: 2;
+}
+
+
+.torneos-hero h1 {
+    max-width: 650px;
+
+    margin:
+        3px 0 15px;
+
+    font-size:
+        clamp(38px, 5vw, 60px);
+
+    line-height: 1.04;
+}
+
+
+.torneos-hero h1 span {
     color: var(--color-acento);
 }
 
-/* GRILLA BOOTSTRAP    */
 
-.row.g-3 {
-    --bs-gutter-x: 20px;
-    --bs-gutter-y: 20px;
+.torneos-hero-contenido p {
+    max-width: 620px;
+
+    margin: 0;
+
+    color:
+        rgba(241, 236, 255, 0.76);
+
+    font-size: 17px;
 }
 
-/* TARJETAS  */
 
+.torneos-resumen {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+}
+
+
+.torneos-resumen > div {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 105px;
+
+    justify-content: center;
+
+    padding: 18px;
+
+    border:
+        1px solid rgba(145, 70, 255, 0.25);
+
+    border-radius: 14px;
+
+    background:
+        rgba(14, 11, 22, 0.52);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.torneos-resumen > div:hover {
+    transform:
+        translateY(-3px);
+
+    border-color:
+        var(--color-acento);
+}
+
+
+.torneos-resumen strong {
+    color: var(--color-acento);
+
+    font-size: 30px;
+    line-height: 1;
+}
+
+
+.torneos-resumen span {
+    margin-top: 7px;
+
+    color:
+        var(--color-texto-secundario);
+
+    font-size: 13px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   CONTENIDO TORNEOS
+   ========================================================= */
+
+.torneos-contenido {
+    padding:
+        32px !important;
+}
+
+
+/* =========================================================
+   FILTROS
+   ========================================================= */
+
+.filtros-torneos {
+    display: grid;
+
+    grid-template-columns:
+        2fr 1.1fr 1.1fr 1fr 1fr;
+
+    gap: 14px;
+
+    margin-bottom: 22px;
+
+    padding: 20px;
+
+    border:
+        1px solid rgba(145, 70, 255, 0.22);
+
+    border-radius: 14px;
+
+    background:
+        rgba(14, 11, 22, 0.55);
+}
+
+
+.filtro-busqueda {
+    grid-column:
+        span 2;
+}
+
+
+.filtro-botones {
+    grid-column:
+        1 / -1;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 3px;
+}
+
+
+.form-label {
+    margin-bottom: 7px;
+
+    color:
+        var(--color-texto-secundario);
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.form-control,
+.form-select {
+    min-height: 43px;
+
+    border:
+        1px solid rgba(145, 70, 255, 0.58);
+
+    border-radius: 8px;
+
+    background:
+        var(--color-fondo);
+
+    color:
+        var(--color-texto);
+}
+
+
+.form-control::placeholder {
+    color: #787184;
+}
+
+
+.form-control:focus,
+.form-select:focus {
+    border-color:
+        var(--color-acento);
+
+    background:
+        var(--color-fondo);
+
+    color:
+        var(--color-texto);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(0, 245, 212, 0.1);
+}
+
+
+.form-select option {
+    background:
+        var(--color-fondo);
+
+    color:
+        var(--color-texto);
+}
+
+
+.form-control:disabled,
+.form-select:disabled {
+    background:
+        #292235;
+
+    color:
+        var(--color-texto-secundario);
+
+    opacity: 1;
+}
+
+
+.resultado-torneos-cabecera {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin:
+        25px 0 16px;
+
+    color:
+        var(--color-texto-secundario);
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   CARDS DE TORNEO
+   ========================================================= */
+
+.torneo-card {
+    overflow: hidden;
+
+    height: 100%;
+
+    border:
+        1px solid rgba(145, 70, 255, 0.22);
+
+    border-radius:
+        16px;
+
+    background:
+        var(--color-fondo-secundario);
+
+    box-shadow:
+        0 12px 35px
+        rgba(0, 0, 0, 0.18);
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+.torneo-card:hover {
+    transform:
+        translateY(-7px);
+
+    border-color:
+        var(--color-acento);
+
+    box-shadow:
+        0 20px 42px
+        rgba(0, 0, 0, 0.35);
+}
+
+
+.torneo-card-imagen {
+    position: relative;
+
+    height: 190px;
+
+    overflow: hidden;
+
+    background:
+        var(--color-superficie);
+}
+
+
+.torneo-card-imagen img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition:
+        transform 0.45s ease;
+}
+
+
+.torneo-card:hover
+.torneo-card-imagen img {
+    transform:
+        scale(1.06);
+}
+
+
+.torneo-card-imagen::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(14, 11, 22, 0.05),
+            rgba(14, 11, 22, 0.88)
+        );
+}
+
+
+.torneo-card-overlay {
+    position: absolute;
+
+    z-index: 2;
+
+    right: 14px;
+    bottom: 14px;
+    left: 14px;
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.torneo-juego,
+.torneo-estado {
+    padding:
+        5px 9px;
+
+    border-radius:
+        7px;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.7px;
+
+    text-transform: uppercase;
+}
+
+
+.torneo-juego {
+    background:
+        rgba(14, 11, 22, 0.82);
+
+    color:
+        var(--color-texto);
+}
+
+
+.torneo-estado {
+    background:
+        var(--color-primario);
+
+    color:
+        white;
+}
+
+
+.estado-abierto {
+    background:
+        rgba(0, 208, 132, 0.9);
+}
+
+
+.estado-curso {
+    background:
+        rgba(145, 70, 255, 0.95);
+}
+
+
+.estado-cerrado {
+    background:
+        rgba(120, 113, 132, 0.95);
+}
+
+
+.estado-cancelado {
+    background:
+        rgba(255, 92, 122, 0.95);
+}
+
+
+.torneo-card-contenido {
+    display: flex;
+    flex-direction: column;
+
+    height:
+        calc(100% - 190px);
+
+    padding: 20px;
+}
+
+
+.torneo-card-contenido h3 {
+    margin:
+        0 0 7px;
+
+    color:
+        var(--color-texto);
+
+    font-size: 21px;
+}
+
+
+.torneo-card-subtitulo {
+    margin-bottom: 18px;
+
+    color:
+        var(--color-texto-secundario);
+
+    font-size: 13px;
+}
+
+
+.torneo-meta-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 11px;
+
+    margin-bottom: 20px;
+}
+
+
+.torneo-meta {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-width: 0;
+}
+
+
+.torneo-meta-icono {
+    flex:
+        0 0 auto;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 31px;
+    height: 31px;
+
+    border-radius: 8px;
+
+    background:
+        rgba(145, 70, 255, 0.12);
+
+    color:
+        var(--color-acento);
+}
+
+
+.torneo-meta > div {
+    display: flex;
+
+    min-width: 0;
+
+    flex-direction: column;
+}
+
+
+.torneo-meta-label {
+    color:
+        var(--color-texto-secundario);
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+}
+
+
+.torneo-meta strong {
+    overflow: hidden;
+
+    color:
+        var(--color-texto);
+
+    font-size: 12px;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.torneo-card-boton {
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    width: 100%;
+
+    margin-top: auto;
+}
+
+
+/* =========================================================
+   ESTADOS DE CARGA / VACÍO
+   ========================================================= */
+
+.cargando-torneos,
+.estado-vacio {
+    display: flex;
+
+    min-height: 230px;
+
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+}
+
+
+.cargando-torneos {
+    gap: 12px;
+
+    color:
+        var(--color-texto-secundario);
+}
+
+
+.cargando-torneos
+.spinner-border {
+    color:
+        var(--color-acento);
+}
+
+
+.estado-vacio-icono {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 65px;
+    height: 65px;
+
+    margin-bottom: 13px;
+
+    border:
+        1px solid rgba(145, 70, 255, 0.35);
+
+    border-radius: 50%;
+
+    background:
+        rgba(145, 70, 255, 0.1);
+
+    color:
+        var(--color-acento);
+
+    font-size: 30px;
+}
+
+
+.estado-vacio h3 {
+    margin-bottom: 6px;
+}
+
+
+.estado-vacio p {
+    margin: 0;
+
+    color:
+        var(--color-texto-secundario);
+}
+
+
+/* =========================================================
+   CARDS GENERALES
+   ========================================================= */
 
 .card {
-    background-color: var(--color-fondo);
-    color: var(--color-texto);
+    border:
+        1px solid rgba(145, 70, 255, 0.35);
 
-    border: 1px solid var(--color-primario);
-    border-radius: var(--radio-borde);
+    border-radius:
+        var(--radio-borde);
+
+    background:
+        var(--color-fondo);
+
+    color:
+        var(--color-texto);
 }
+
 
 .card-body {
     padding: 20px;
 }
 
-/* TORNEOS  */
 
-
-#lista-torneos,
-#lista-torneos-completa {
-    margin-top: 20px;
+.card-title {
+    color:
+        var(--color-acento);
 }
 
-/* PRÓXIMOS CIERRES   */
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+.btn {
+    border-radius: 8px;
+
+    font-weight: 600;
+
+    transition:
+        transform 0.15s ease,
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+.btn:hover {
+    transform:
+        translateY(-1px);
+}
+
+
+.btn-primary {
+    border-color:
+        var(--color-primario);
+
+    background:
+        var(--color-primario);
+
+    color:
+        white;
+}
+
+
+.btn-primary:hover,
+.btn-primary:focus {
+    border-color:
+        var(--color-acento);
+
+    background:
+        var(--color-acento);
+
+    color:
+        var(--color-fondo);
+}
+
+
+.btn-outline-primary {
+    border-color:
+        rgba(145, 70, 255, 0.7);
+
+    color:
+        var(--color-acento);
+}
+
+
+.btn-outline-primary:hover {
+    border-color:
+        var(--color-primario);
+
+    background:
+        var(--color-primario);
+
+    color:
+        white;
+}
+
+
+.btn-danger {
+    border-color:
+        var(--color-error);
+
+    background:
+        var(--color-error);
+}
+
+
+.btn:disabled {
+    cursor:
+        not-allowed;
+
+    opacity: 0.5;
+
+    transform: none;
+}
+
+
+/* =========================================================
+   ALERTAS
+   ========================================================= */
+
+.alert {
+    border-radius:
+        10px;
+}
+
+
+.alert-danger {
+    border-color:
+        var(--color-error);
+
+    background:
+        rgba(255, 92, 122, 0.12);
+
+    color:
+        #ff8ca3;
+}
+
+
+.alert-success {
+    border-color:
+        var(--color-acento);
+
+    background:
+        rgba(0, 245, 212, 0.08);
+
+    color:
+        var(--color-texto);
+}
+
+
+.alert-warning {
+    border-color:
+        var(--color-advertencia);
+
+    background:
+        rgba(255, 191, 71, 0.08);
+
+    color:
+        var(--color-texto);
+}
+
+
+.alert-secondary {
+    border-color:
+        rgba(145, 70, 255, 0.35);
+
+    background:
+        var(--color-fondo);
+
+    color:
+        var(--color-texto);
+}
+
+
+/* =========================================================
+   OTROS COMPONENTES YA EXISTENTES
+   ========================================================= */
+
+.row.g-3,
+.row.g-4 {
+    --bs-gutter-x: 20px;
+    --bs-gutter-y: 20px;
+}
 
 
 #lista-cierres {
     display: grid;
+
     grid-template-columns:
-        repeat(auto-fit, minmax(250px, 1fr));
+        repeat(
+            auto-fit,
+            minmax(250px, 1fr)
+        );
 
     gap: 20px;
 }
 
+
 .tarjeta-cierre {
-    background-color: var(--color-fondo);
-
-    border-left: 5px solid var(--color-acento);
-    border-radius: var(--radio-borde);
-
     padding: 20px;
+
+    border-left:
+        4px solid var(--color-acento);
+
+    border-radius:
+        var(--radio-borde);
+
+    background:
+        var(--color-fondo);
 }
+
 
 .tarjeta-cierre h3 {
-    color: var(--color-acento);
-    margin-top: 0;
+    color:
+        var(--color-acento);
 }
-
-/* IMAGEN DE INICIO */
 
 
 #imagen-destacada img {
     display: block;
 
     width: 100%;
-    height: 650px;
+    height: 520px;
 
     object-fit: cover;
 
-    border-radius: var(--radio-borde);
+    border-radius:
+        var(--radio-borde);
 }
-
-/* VIDEO    */
 
 
 #video iframe {
     display: block;
 
     width: 100%;
-    max-width: none;
 
-    aspect-ratio: 16 / 9;
+    aspect-ratio:
+        16 / 9;
 
-    border: none;
-    border-radius: var(--radio-borde);
+    border: 0;
+
+    border-radius:
+        var(--radio-borde);
 }
-
-/* BOTONES  */
-
-
-.btn-primary {
-    background-color: var(--color-primario);
-    border-color: var(--color-primario);
-
-    color: var(--color-texto);
-
-    font-size: 16px;
-}
-
-.btn-primary:hover,
-.btn-primary:focus {
-    background-color: var(--color-acento);
-    border-color: var(--color-acento);
-
-    color: var(--color-fondo);
-}
-
-.btn-outline-primary {
-    color: var(--color-acento);
-    border-color: var(--color-primario);
-}
-
-.btn-outline-primary:hover {
-    background-color: var(--color-primario);
-    border-color: var(--color-primario);
-
-    color: var(--color-texto);
-}
-
-.btn-danger {
-    background-color: var(--color-error);
-    border-color: var(--color-error);
-}
-
-
-/* Botones deshabilitados */
-
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-
-/* FORMULARIOS          */
-
-
-.form-label,
-fieldset legend {
-    color: var(--color-texto);
-}
-
-.form-control,
-.form-select {
-    background-color: var(--color-fondo);
-
-    color: var(--color-texto);
-
-    border: 1px solid var(--color-primario);
-
-    border-radius: 6px;
-}
-
-.form-control::placeholder {
-    color: #aaa3b6;
-}
-
-.form-control:focus,
-.form-select:focus {
-    background-color: var(--color-fondo);
-
-    color: var(--color-texto);
-
-    border-color: var(--color-acento);
-
-    box-shadow:
-        0 0 0 0.2rem rgba(0, 245, 212, 0.2);
-}
-
-
-/* Opciones desplegables */
-
-.form-select option {
-    background-color: var(--color-fondo);
-    color: var(--color-texto);
-}
-
-
-/* Campos bloqueados */
-
-.form-control:disabled,
-.form-select:disabled {
-    background-color: #292235;
-
-    color: #aaa3b6;
-
-    opacity: 1;
-}
-
-
-/* Radio buttons */
-
-.form-check-input {
-    border-color: var(--color-primario);
-}
-
-.form-check-input:checked {
-    background-color: var(--color-primario);
-    border-color: var(--color-primario);
-}
-
-/* REQUISITOS DE INSCRIPCIÓNes       */
 
 
 .bg-light {
-    background-color: var(--color-fondo) !important;
+    border:
+        1px solid rgba(145, 70, 255, 0.35);
 
-    color: var(--color-texto);
+    background:
+        var(--color-fondo) !important;
 
-    border: 1px solid var(--color-primario);
+    color:
+        var(--color-texto);
 }
-
-/* ALERTAS    */
-
-
-.alert-danger {
-    background-color: rgba(255, 92, 122, 0.15);
-
-    color: var(--color-error);
-
-    border-color: var(--color-error);
-}
-
-.alert-success {
-    background-color: rgba(0, 245, 212, 0.10);
-
-    color: var(--color-texto);
-
-    border-color: var(--color-acento);
-}
-
-.alert-warning {
-    background-color: var(--color-fondo);
-
-    color: var(--color-texto);
-
-    border-color: var(--color-acento);
-}
-
-.alert-secondary {
-    background-color: var(--color-fondo);
-
-    color: var(--color-texto);
-
-    border-color: var(--color-primario);
-}
-
-/* INTEGRANTES     */
 
 
 .list-group-item {
-    background-color: var(--color-fondo);
+    border-color:
+        rgba(145, 70, 255, 0.4);
 
-    color: var(--color-texto);
+    background:
+        var(--color-fondo);
 
-    border-color: var(--color-primario);
+    color:
+        var(--color-texto);
 }
-
-
-/* PARTICIPANTES / BADGES  */
 
 
 .badge.text-bg-secondary {
-    background-color: var(--color-primario) !important;
+    background:
+        var(--color-primario) !important;
 
-    color: var(--color-texto) !important;
+    color:
+        white !important;
 }
-
-/* PARTIDAS  */
 
 
 .enfrentamiento {
     display: flex;
 
-    justify-content: space-between;
+    justify-content:
+        space-between;
+
     align-items: center;
 
     gap: 20px;
 }
 
-.resultado {
-    color: var(--color-acento);
 
-    font-weight: bold;
+.resultado {
+    color:
+        var(--color-acento);
+
+    font-weight: 700;
 }
 
-/* TABLA DE POSICIONES  */
 
+/* =========================================================
+   TABLAS
+   ========================================================= */
 
 .table {
     --bs-table-bg:
@@ -431,75 +1322,209 @@ fieldset legend {
     --bs-table-hover-color:
         var(--color-texto);
 
-    border-color: var(--color-primario);
-}
-
-.table thead th {
-    color: var(--color-acento);
-
-    border-bottom-color:
+    border-color:
         var(--color-primario);
 }
 
 
-/* LINKS */
+.table thead th {
+    border-bottom-color:
+        var(--color-primario);
 
-
-a {
-    color: var(--color-acento);
+    color:
+        var(--color-acento);
 }
 
-/* FOOTER   */
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
 
 footer {
-    background-color: var(--color-superficie);
+    border-top:
+        1px solid rgba(145, 70, 255, 0.22) !important;
 
-    color: var(--color-texto);
+    background:
+        var(--color-superficie);
 
-    border-color:
-        var(--color-primario) !important;
+    color:
+        var(--color-texto);
 }
+
 
 footer p {
     margin: 0;
 }
 
 
-/* RESPONSIVE   */
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
-@media (max-width: 767px) {
+@media (max-width: 991px) {
 
-    .navbar {
-        padding: 12px 0;
+    .navbar-collapse {
+        margin-top: 15px;
+
+        padding: 15px;
+
+        border:
+            1px solid rgba(145, 70, 255, 0.2);
+
+        border-radius:
+            12px;
+
+        background:
+            var(--color-fondo);
     }
 
-    .navbar-brand {
-        font-size: 20px;
+
+    .navbar-nav {
+        align-items:
+            stretch !important;
     }
 
-    main.container {
-        padding-top: 20px !important;
-        padding-bottom: 20px !important;
-    }
 
-    main > section {
-        padding: 16px;
-        margin-bottom: 20px !important;
-    }
-
-    #imagen-destacada img {
-        height: 300px;
-    }
-
-    #lista-cierres {
+    .torneos-hero {
         grid-template-columns: 1fr;
+
+        gap: 28px;
     }
+
+
+    .torneos-resumen {
+        grid-template-columns:
+            repeat(4, 1fr);
+    }
+
+
+    .filtros-torneos {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .filtro-busqueda {
+        grid-column:
+            1 / -1;
+    }
+
 }
 
 
-@media (max-width: 400px) {
+@media (max-width: 767px) {
+
+    main.container {
+        padding-top:
+            24px !important;
+
+        padding-bottom:
+            35px !important;
+    }
+
+
+    main > section {
+        padding: 18px;
+    }
+
+
+    .torneos-hero {
+        min-height: auto;
+
+        padding:
+            27px !important;
+    }
+
+
+    .torneos-hero h1 {
+        font-size: 37px;
+    }
+
+
+    .torneos-resumen {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .filtros-torneos {
+        grid-template-columns: 1fr;
+    }
+
+
+    .filtro-busqueda,
+    .filtro-botones {
+        grid-column:
+            auto;
+    }
+
+
+    .filtro-botones {
+        justify-content:
+            stretch;
+    }
+
+
+    .filtro-botones .btn {
+        flex: 1;
+    }
+
+
+    .torneos-contenido {
+        padding:
+            20px !important;
+    }
+
+
+    .torneo-card-imagen {
+        height: 210px;
+    }
+
 
     #imagen-destacada img {
-        height: 220px;
+        height: 320px;
     }
+
+}
+
+
+@media (max-width: 430px) {
+
+    .marca-texto strong {
+        font-size: 15px;
+    }
+
+
+    .marca-texto small {
+        font-size: 9px;
+    }
+
+
+    .marca-icono {
+        width: 38px;
+        height: 38px;
+    }
+
+
+    .torneos-resumen {
+        gap: 8px;
+    }
+
+
+    .torneos-resumen > div {
+        min-height: 90px;
+
+        padding: 13px;
+    }
+
+
+    .torneos-resumen strong {
+        font-size: 25px;
+    }
+
+
+    .torneo-meta-grid {
+        grid-template-columns: 1fr;
+    }
+
 }
