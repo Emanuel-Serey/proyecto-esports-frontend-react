@@ -13,14 +13,16 @@ import {
 
 function Cabecera() {
 
-    const navigate = useNavigate();
+    const navigate =
+        useNavigate();
 
-    // Se utiliza para forzar la actualización de la
-    // cabecera cuando cambia la ruta.
+
     useLocation();
+
 
     const autenticado =
         estaAutenticado();
+
 
     const rol =
         obtenerRol();
@@ -35,11 +37,14 @@ function Cabecera() {
 
 
         if (!confirmar) {
+
             return;
+
         }
 
 
         cerrarSesion();
+
 
         navigate(
             "/login"
@@ -77,6 +82,7 @@ function Cabecera() {
                             EA
                         </span>
 
+
                         <span className="marca-texto">
 
                             <strong>
@@ -102,7 +108,9 @@ function Cabecera() {
                         aria-label="Abrir menú"
                     >
 
-                        <span className="navbar-toggler-icon" />
+                        <span
+                            className="navbar-toggler-icon"
+                        />
 
                     </button>
 
@@ -112,13 +120,17 @@ function Cabecera() {
                         id="menuPrincipal"
                     >
 
-                        <ul className="navbar-nav ms-auto align-items-lg-center">
+                        <ul
+                            className="navbar-nav ms-auto align-items-lg-center"
+                        >
 
 
                             <li className="nav-item">
 
                                 <NavLink
-                                    className={claseLink}
+                                    className={
+                                        claseLink
+                                    }
                                     to="/"
                                     end
                                 >
@@ -131,7 +143,9 @@ function Cabecera() {
                             <li className="nav-item">
 
                                 <NavLink
-                                    className={claseLink}
+                                    className={
+                                        claseLink
+                                    }
                                     to="/torneos"
                                 >
                                     Torneos
@@ -140,134 +154,163 @@ function Cabecera() {
                             </li>
 
 
-                            {autenticado &&
-                                rol === "JUGADOR" && (
+                            {
+                                autenticado &&
+                                rol ===
+                                    "JUGADOR" && (
 
-                                <>
+                                    <>
 
-                                    <li className="nav-item">
+                                        <li className="nav-item">
 
-                                        <NavLink
-                                            className={claseLink}
-                                            to="/inscripcion"
-                                        >
-                                            Inscripción
-                                        </NavLink>
+                                            <NavLink
+                                                className={
+                                                    claseLink
+                                                }
+                                                to="/inscripcion"
+                                            >
+                                                Inscripción
+                                            </NavLink>
 
-                                    </li>
-
-
-                                    <li className="nav-item">
-
-                                        <NavLink
-                                            className={claseLink}
-                                            to="/equipo"
-                                        >
-                                            Equipo
-                                        </NavLink>
-
-                                    </li>
+                                        </li>
 
 
-                                    <li className="nav-item">
+                                        <li className="nav-item">
 
-                                        <NavLink
-                                            className={claseLink}
-                                            to="/perfil"
-                                        >
-                                            Perfil
-                                        </NavLink>
+                                            <NavLink
+                                                className={
+                                                    claseLink
+                                                }
+                                                to="/equipo"
+                                            >
+                                                Equipo
+                                            </NavLink>
 
-                                    </li>
-
-                                </>
-
-                            )}
+                                        </li>
 
 
-                            {autenticado &&
-                                rol === "ADMIN" && (
+                                        <li className="nav-item">
 
-                                <li className="nav-item">
+                                            <NavLink
+                                                className={
+                                                    claseLink
+                                                }
+                                                to="/perfil"
+                                            >
+                                                Perfil
+                                            </NavLink>
 
-                                    <NavLink
-                                        className={claseLink}
-                                        to="/admin"
-                                    >
-                                        Administración
-                                    </NavLink>
+                                        </li>
 
-                                </li>
+                                    </>
 
-                            )}
-
-
-                            {autenticado &&
-                                rol === "ORGANIZADOR" && (
-
-                                <li className="nav-item">
-
-                                    <NavLink
-                                        className={claseLink}
-                                        to="/organizador"
-                                    >
-                                        Organización
-                                    </NavLink>
-
-                                </li>
-
-                            )}
+                                )
+                            }
 
 
-                            {!autenticado && (
-
-                                <>
+                            {
+                                autenticado &&
+                                rol ===
+                                    "ADMIN" && (
 
                                     <li className="nav-item">
 
                                         <NavLink
-                                            className={claseLink}
-                                            to="/login"
+                                            className={
+                                                claseLink
+                                            }
+                                            to="/admin"
                                         >
-                                            Iniciar sesión
+                                            Administración
                                         </NavLink>
 
                                     </li>
 
+                                )
+                            }
+
+
+                            {
+                                autenticado &&
+                                (
+                                    rol ===
+                                        "ORGANIZADOR" ||
+                                    rol ===
+                                        "ADMIN"
+                                ) && (
+
+                                    <li className="nav-item">
+
+                                        <NavLink
+                                            className={
+                                                claseLink
+                                            }
+                                            to="/organizador"
+                                        >
+                                            Organización
+                                        </NavLink>
+
+                                    </li>
+
+                                )
+                            }
+
+
+                            {
+                                !autenticado && (
+
+                                    <>
+
+                                        <li className="nav-item">
+
+                                            <NavLink
+                                                className={
+                                                    claseLink
+                                                }
+                                                to="/login"
+                                            >
+                                                Iniciar sesión
+                                            </NavLink>
+
+                                        </li>
+
+
+                                        <li className="nav-item ms-lg-2">
+
+                                            <NavLink
+                                                className="btn btn-primary navbar-registro"
+                                                to="/registro"
+                                            >
+                                                Registrarse
+                                            </NavLink>
+
+                                        </li>
+
+                                    </>
+
+                                )
+                            }
+
+
+                            {
+                                autenticado && (
 
                                     <li className="nav-item ms-lg-2">
 
-                                        <NavLink
-                                            className="btn btn-primary navbar-registro"
-                                            to="/registro"
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline-primary navbar-salir"
+                                            onClick={
+                                                manejarCerrarSesion
+                                            }
                                         >
-                                            Registrarse
-                                        </NavLink>
+                                            Cerrar sesión
+                                        </button>
 
                                     </li>
 
-                                </>
-
-                            )}
-
-
-                            {autenticado && (
-
-                                <li className="nav-item ms-lg-2">
-
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-primary navbar-salir"
-                                        onClick={
-                                            manejarCerrarSesion
-                                        }
-                                    >
-                                        Cerrar sesión
-                                    </button>
-
-                                </li>
-
-                            )}
+                                )
+                            }
 
                         </ul>
 
