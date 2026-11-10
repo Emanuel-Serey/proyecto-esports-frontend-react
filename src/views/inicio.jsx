@@ -143,10 +143,47 @@ function Inicio() {
 
 
     const torneosDestacados =
-        torneos.slice(
-            0,
-            3
-        );
+    useMemo(
+        function () {
+
+            const hoy =
+                obtenerFechaActual();
+
+
+            return torneos
+                .filter(
+                    function (torneo) {
+
+                        const abiertoVigente =
+                            torneo.estado ===
+                                "Abierto" &&
+                            (
+                                !torneo.cierreInscripcion ||
+                                torneo.cierreInscripcion >=
+                                    hoy
+                            );
+
+
+                        const enCurso =
+                            torneo.estado ===
+                            "En curso";
+
+
+                        return (
+                            abiertoVigente ||
+                            enCurso
+                        );
+
+                    }
+                )
+                .slice(
+                    0,
+                    3
+                );
+
+        },
+        [torneos]
+    );
 
 
     return (

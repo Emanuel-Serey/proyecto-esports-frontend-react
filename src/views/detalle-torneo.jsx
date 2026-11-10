@@ -217,8 +217,23 @@ function DetalleTorneo() {
             : 0;
 
 
+    const hoy =
+        new Date()
+            .toISOString()
+            .slice(
+                0,
+                10
+            );
+
+
     const abierto =
-        torneo.estado === "Abierto";
+        torneo.estadoBackend ===
+            "ABIERTO" &&
+        (
+            !torneo.cierreInscripcion ||
+            torneo.cierreInscripcion >=
+                hoy
+        );
 
 
     return (

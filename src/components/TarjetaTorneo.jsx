@@ -1,13 +1,23 @@
-import { Link } from "react-router-dom";
+import {
+    Link
+} from "react-router-dom";
 
 
-function obtenerImagenJuego(juego) {
+function obtenerImagenJuego(
+    juego
+) {
 
     const nombre =
-        String(juego || "").toLowerCase();
+        String(
+            juego || ""
+        ).toLowerCase();
 
 
-    if (nombre.includes("valorant")) {
+    if (
+        nombre.includes(
+            "valorant"
+        )
+    ) {
 
         return "https://cdn.mos.cms.futurecdn.net/QotLyoh6LR4VT8KvE3tGze.jpg";
 
@@ -15,8 +25,12 @@ function obtenerImagenJuego(juego) {
 
 
     if (
-        nombre.includes("league") ||
-        nombre.includes("lol")
+        nombre.includes(
+            "league"
+        ) ||
+        nombre.includes(
+            "lol"
+        )
     ) {
 
         return "https://static1-es.millenium.gg/articles/1/49/86/1/@/273016-league-of-legends-event-pass-orig-1-full-1.jpg";
@@ -24,7 +38,11 @@ function obtenerImagenJuego(juego) {
     }
 
 
-    if (nombre.includes("rocket")) {
+    if (
+        nombre.includes(
+            "rocket"
+        )
+    ) {
 
         return "https://www.rocketleague.com/rr7/rl_evergreen-BuFUX3Ml.jpg";
 
@@ -35,15 +53,21 @@ function obtenerImagenJuego(juego) {
 }
 
 
-function formatearFecha(fecha) {
+function formatearFecha(
+    fecha
+) {
 
     if (!fecha) {
+
         return "Sin fecha";
+
     }
 
 
     const fechaObjeto =
-        new Date(`${fecha}T00:00:00`);
+        new Date(
+            `${fecha}T00:00:00`
+        );
 
 
     if (
@@ -51,26 +75,37 @@ function formatearFecha(fecha) {
             fechaObjeto.getTime()
         )
     ) {
+
         return fecha;
+
     }
 
 
-    return fechaObjeto.toLocaleDateString(
-        "es-CL",
-        {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        }
-    );
+    return fechaObjeto
+        .toLocaleDateString(
+            "es-CL",
+            {
+                day:
+                    "2-digit",
+
+                month:
+                    "short",
+
+                year:
+                    "numeric"
+            }
+        );
 }
 
 
-function obtenerClaseEstado(estado) {
+function obtenerClaseEstado(
+    estado
+) {
 
     const estadoNormalizado =
-        String(estado || "")
-            .toLowerCase();
+        String(
+            estado || ""
+        ).toLowerCase();
 
 
     if (
@@ -78,7 +113,9 @@ function obtenerClaseEstado(estado) {
             "abierto"
         )
     ) {
+
         return "estado-abierto";
+
     }
 
 
@@ -87,7 +124,9 @@ function obtenerClaseEstado(estado) {
             "curso"
         )
     ) {
+
         return "estado-curso";
+
     }
 
 
@@ -96,7 +135,9 @@ function obtenerClaseEstado(estado) {
             "cerrado"
         )
     ) {
+
         return "estado-cerrado";
+
     }
 
 
@@ -105,7 +146,9 @@ function obtenerClaseEstado(estado) {
             "cancelado"
         )
     ) {
+
         return "estado-cancelado";
+
     }
 
 
@@ -129,17 +172,16 @@ function TarjetaTorneo({
                             torneo.juego
                         )
                     }
-                    alt={`Imagen de ${torneo.juego}`}
+                    alt={
+                        `Imagen de ${torneo.juego}`
+                    }
                 />
 
 
                 <div className="torneo-card-overlay">
 
-
                     <span className="torneo-juego">
-
                         {torneo.juego}
-
                     </span>
 
 
@@ -150,9 +192,7 @@ function TarjetaTorneo({
                             )}`
                         }
                     >
-
                         {torneo.estado}
-
                     </span>
 
                 </div>
@@ -168,10 +208,8 @@ function TarjetaTorneo({
 
 
                 <p className="torneo-card-subtitulo">
-
                     Prepárate para competir y demostrar
                     tu nivel.
-
                 </p>
 
 
@@ -212,7 +250,18 @@ function TarjetaTorneo({
                             </span>
 
                             <strong>
-                                {torneo.cupoMaximo}
+
+                                {
+                                    torneo.cuposOcupados ??
+                                    0
+                                }
+
+                                {" / "}
+
+                                {
+                                    torneo.cupoMaximo
+                                }
+
                             </strong>
 
                         </div>
@@ -273,7 +322,9 @@ function TarjetaTorneo({
 
 
                 <Link
-                    to={`/detalle/${torneo.id}`}
+                    to={
+                        `/detalle/${torneo.id}`
+                    }
                     className="btn btn-primary torneo-card-boton"
                 >
 
