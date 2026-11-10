@@ -11,10 +11,16 @@ async function procesarRespuesta(
 
     let data = null;
 
+
     try {
-        data = await response.json();
+
+        data =
+            await response.json();
+
     } catch {
+
         data = null;
+
     }
 
 
@@ -33,18 +39,28 @@ async function procesarRespuesta(
         ) {
 
             const valores =
-                Object.values(data);
+                Object.values(
+                    data
+                );
+
 
             if (
                 valores.length > 0 &&
-                typeof valores[0] === "string"
+                typeof valores[0] ===
+                "string"
             ) {
-                mensaje = valores[0];
+
+                mensaje =
+                    valores[0];
+
             }
         }
 
 
-        if (response.status === 401) {
+        if (
+            response.status ===
+            401
+        ) {
 
             mensaje =
                 "Tu sesión ha expirado. Inicia sesión nuevamente.";
@@ -52,7 +68,10 @@ async function procesarRespuesta(
         }
 
 
-        if (response.status === 403) {
+        if (
+            response.status ===
+            403
+        ) {
 
             mensaje =
                 data?.error ||
@@ -62,7 +81,10 @@ async function procesarRespuesta(
         }
 
 
-        if (response.status === 404) {
+        if (
+            response.status ===
+            404
+        ) {
 
             mensaje =
                 data?.error ||
@@ -72,7 +94,10 @@ async function procesarRespuesta(
         }
 
 
-        if (response.status === 409) {
+        if (
+            response.status ===
+            409
+        ) {
 
             mensaje =
                 data?.error ||
@@ -82,7 +107,10 @@ async function procesarRespuesta(
         }
 
 
-        if (response.status === 422) {
+        if (
+            response.status ===
+            422
+        ) {
 
             mensaje =
                 data?.error ||
@@ -92,7 +120,10 @@ async function procesarRespuesta(
         }
 
 
-        if (response.status >= 500) {
+        if (
+            response.status >=
+            500
+        ) {
 
             mensaje =
                 data?.error ||
@@ -102,7 +133,10 @@ async function procesarRespuesta(
         }
 
 
-        throw new Error(mensaje);
+        throw new Error(
+            mensaje
+        );
+
     }
 
 
@@ -131,57 +165,66 @@ export async function obtenerDatosOrganizador() {
         respuestaResultados,
         respuestaRankings,
         respuestaSanciones
-    ] = await Promise.all([
+    ] =
+        await Promise.all([
 
-        fetch(
-            `${API_URL}/api/torneos`
-        ),
+            fetch(
+                `${API_URL}/api/torneos`
+            ),
 
-        fetch(
-            `${API_URL}/api/inscripciones`,
-            {
-                method: "GET",
-                headers
-            }
-        ),
+            fetch(
+                `${API_URL}/api/inscripciones`,
+                {
+                    method:
+                        "GET",
 
-        fetch(
-            `${API_URL}/api/equipos`,
-            {
-                method: "GET",
-                headers
-            }
-        ),
+                    headers
+                }
+            ),
 
-        fetch(
-            `${API_URL}/api/usuarios/rol/JUGADOR`,
-            {
-                method: "GET",
-                headers
-            }
-        ),
+            fetch(
+                `${API_URL}/api/equipos`,
+                {
+                    method:
+                        "GET",
 
-        fetch(
-            `${API_URL}/api/partidas`
-        ),
+                    headers
+                }
+            ),
 
-        fetch(
-            `${API_URL}/api/resultados`
-        ),
+            fetch(
+                `${API_URL}/api/usuarios/rol/JUGADOR`,
+                {
+                    method:
+                        "GET",
 
-        fetch(
-            `${API_URL}/api/rankings`
-        ),
+                    headers
+                }
+            ),
 
-        fetch(
-            `${API_URL}/api/sanciones`,
-            {
-                method: "GET",
-                headers
-            }
-        )
+            fetch(
+                `${API_URL}/api/partidas`
+            ),
 
-    ]);
+            fetch(
+                `${API_URL}/api/resultados`
+            ),
+
+            fetch(
+                `${API_URL}/api/rankings`
+            ),
+
+            fetch(
+                `${API_URL}/api/sanciones`,
+                {
+                    method:
+                        "GET",
+
+                    headers
+                }
+            )
+
+        ]);
 
 
     const torneos =
@@ -257,6 +300,37 @@ export async function obtenerDatosOrganizador() {
 
 /*
  * =========================================
+ * INSCRIPCIONES
+ * =========================================
+ */
+
+export async function cambiarEstadoInscripcion(
+    inscripcionId,
+    estado
+) {
+
+    const response =
+        await fetch(
+            `${API_URL}/api/inscripciones/${inscripcionId}/estado/${estado}`,
+            {
+                method:
+                    "PUT",
+
+                headers:
+                    obtenerHeadersAutenticados()
+            }
+        );
+
+
+    return procesarRespuesta(
+        response,
+        "No se pudo actualizar la inscripción."
+    );
+}
+
+
+/*
+ * =========================================
  * PARTIDAS
  * =========================================
  */
@@ -269,7 +343,8 @@ export async function crearPartida(
         await fetch(
             `${API_URL}/api/partidas`,
             {
-                method: "POST",
+                method:
+                    "POST",
 
                 headers:
                     obtenerHeadersAutenticados(),
@@ -289,6 +364,36 @@ export async function crearPartida(
 }
 
 
+export async function actualizarPartida(
+    partidaId,
+    datosPartida
+) {
+
+    const response =
+        await fetch(
+            `${API_URL}/api/partidas/${partidaId}`,
+            {
+                method:
+                    "PUT",
+
+                headers:
+                    obtenerHeadersAutenticados(),
+
+                body:
+                    JSON.stringify(
+                        datosPartida
+                    )
+            }
+        );
+
+
+    return procesarRespuesta(
+        response,
+        "No se pudo reprogramar la partida."
+    );
+}
+
+
 export async function cambiarEstadoPartida(
     partidaId,
     estado
@@ -298,7 +403,8 @@ export async function cambiarEstadoPartida(
         await fetch(
             `${API_URL}/api/partidas/${partidaId}/estado/${estado}`,
             {
-                method: "PUT",
+                method:
+                    "PUT",
 
                 headers:
                     obtenerHeadersAutenticados()
@@ -321,7 +427,8 @@ export async function cancelarPartida(
         await fetch(
             `${API_URL}/api/partidas/${partidaId}/cancelar`,
             {
-                method: "PUT",
+                method:
+                    "PUT",
 
                 headers:
                     obtenerHeadersAutenticados()
@@ -357,7 +464,8 @@ export async function crearResultado(
         await fetch(
             `${API_URL}/api/resultados`,
             {
-                method: "POST",
+                method:
+                    "POST",
 
                 headers:
                     obtenerHeadersAutenticados(),
@@ -385,7 +493,8 @@ export async function validarResultado(
         await fetch(
             `${API_URL}/api/resultados/${resultadoId}/validar`,
             {
-                method: "PUT",
+                method:
+                    "PUT",
 
                 headers:
                     obtenerHeadersAutenticados()
@@ -411,7 +520,8 @@ export async function anularResultado(
                 justificacion
             )}`,
             {
-                method: "PUT",
+                method:
+                    "PUT",
 
                 headers:
                     obtenerHeadersAutenticados()
@@ -450,13 +560,19 @@ export async function actualizarRankingPorResultado(
         new URLSearchParams({
 
             torneoId:
-                String(torneoId),
+                String(
+                    torneoId
+                ),
 
             participanteAId:
-                String(participanteAId),
+                String(
+                    participanteAId
+                ),
 
             participanteBId:
-                String(participanteBId)
+                String(
+                    participanteBId
+                )
 
         });
 
@@ -465,7 +581,8 @@ export async function actualizarRankingPorResultado(
         await fetch(
             `${API_URL}/api/rankings/resultado/${resultadoId}?${parametros}`,
             {
-                method: "PUT",
+                method:
+                    "PUT",
 
                 headers:
                     obtenerHeadersAutenticados()
@@ -494,7 +611,8 @@ export async function crearSancion(
         await fetch(
             `${API_URL}/api/sanciones`,
             {
-                method: "POST",
+                method:
+                    "POST",
 
                 headers:
                     obtenerHeadersAutenticados(),
@@ -523,7 +641,8 @@ export async function actualizarSancion(
         await fetch(
             `${API_URL}/api/sanciones/${sancionId}`,
             {
-                method: "PUT",
+                method:
+                    "PUT",
 
                 headers:
                     obtenerHeadersAutenticados(),
@@ -551,7 +670,8 @@ export async function cerrarSancion(
         await fetch(
             `${API_URL}/api/sanciones/${sancionId}/cerrar`,
             {
-                method: "PUT",
+                method:
+                    "PUT",
 
                 headers:
                     obtenerHeadersAutenticados()

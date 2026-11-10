@@ -8,6 +8,9 @@ import {
     obtenerDatosOrganizador
 } from "../services/organizadorService.js";
 
+import GestionInscripcionesOrganizador
+    from "../components/GestionInscripcionesOrganizador.jsx";
+
 import GestionPartidasOrganizador
     from "../components/GestionPartidasOrganizador.jsx";
 
@@ -85,41 +88,33 @@ function PanelOrganizador() {
                 datos.torneos
             );
 
-
             setInscripciones(
                 datos.inscripciones
             );
-
 
             setEquipos(
                 datos.equipos
             );
 
-
             setJugadores(
                 datos.jugadores
             );
-
 
             setPartidas(
                 datos.partidas
             );
 
-
             setResultados(
                 datos.resultados
             );
-
 
             setRankings(
                 datos.rankings
             );
 
-
             setSanciones(
                 datos.sanciones
             );
-
 
             setError("");
 
@@ -133,7 +128,9 @@ function PanelOrganizador() {
 
         } finally {
 
-            setCargando(false);
+            setCargando(
+                false
+            );
 
         }
     }
@@ -149,6 +146,26 @@ function PanelOrganizador() {
     );
 
 
+    const inscripcionesPendientes =
+        useMemo(
+            function () {
+
+                return inscripciones.filter(
+                    function (inscripcion) {
+
+                        return (
+                            inscripcion.estado ===
+                            "PENDIENTE"
+                        );
+
+                    }
+                ).length;
+
+            },
+            [inscripciones]
+        );
+
+
     const partidasProgramadas =
         useMemo(
             function () {
@@ -159,26 +176,6 @@ function PanelOrganizador() {
                         return (
                             partida.estado ===
                             "PROGRAMADA"
-                        );
-
-                    }
-                ).length;
-
-            },
-            [partidas]
-        );
-
-
-    const partidasEnCurso =
-        useMemo(
-            function () {
-
-                return partidas.filter(
-                    function (partida) {
-
-                        return (
-                            partida.estado ===
-                            "EN_CURSO"
                         );
 
                     }
@@ -259,10 +256,6 @@ function PanelOrganizador() {
         <main className="organizador-page">
 
 
-            {/* =========================
-                CABECERA
-            ========================= */}
-
             <section className="organizador-hero">
 
                 <div>
@@ -271,16 +264,14 @@ function PanelOrganizador() {
                         ORGANIZACIÓN
                     </span>
 
-
                     <h1>
                         Centro competitivo
                     </h1>
 
-
                     <p>
-                        Controla partidas, resultados,
-                        rankings y disciplina de las
-                        competencias.
+                        Controla inscripciones,
+                        partidas, resultados,
+                        rankings y disciplina.
                     </p>
 
                 </div>
@@ -288,8 +279,9 @@ function PanelOrganizador() {
 
                 <div className="organizador-hero-estado">
 
-                    <span className="organizador-estado-punto" />
-
+                    <span
+                        className="organizador-estado-punto"
+                    />
 
                     <div>
 
@@ -320,11 +312,34 @@ function PanelOrganizador() {
             )}
 
 
-            {/* =========================
-                KPIs
-            ========================= */}
-
             <section className="organizador-kpis">
+
+
+                <article>
+
+                    <div className="organizador-kpi-icono">
+                        I
+                    </div>
+
+                    <div>
+
+                        <span>
+                            INSCRIPCIONES
+                        </span>
+
+                        <strong>
+                            {
+                                inscripcionesPendientes
+                            }
+                        </strong>
+
+                        <small>
+                            pendientes
+                        </small>
+
+                    </div>
+
+                </article>
 
 
                 <article>
@@ -332,7 +347,6 @@ function PanelOrganizador() {
                     <div className="organizador-kpi-icono">
                         P
                     </div>
-
 
                     <div>
 
@@ -360,37 +374,8 @@ function PanelOrganizador() {
                 <article>
 
                     <div className="organizador-kpi-icono">
-                        ▶
-                    </div>
-
-
-                    <div>
-
-                        <span>
-                            EN CURSO
-                        </span>
-
-                        <strong>
-                            {
-                                partidasEnCurso
-                            }
-                        </strong>
-
-                        <small>
-                            partidas activas
-                        </small>
-
-                    </div>
-
-                </article>
-
-
-                <article>
-
-                    <div className="organizador-kpi-icono">
                         R
                     </div>
-
 
                     <div>
 
@@ -421,7 +406,6 @@ function PanelOrganizador() {
                         !
                     </div>
 
-
                     <div>
 
                         <span>
@@ -446,10 +430,6 @@ function PanelOrganizador() {
 
             </section>
 
-
-            {/* =========================
-                RESUMEN SECUNDARIO
-            ========================= */}
 
             <section className="organizador-resumen">
 
@@ -516,17 +496,23 @@ function PanelOrganizador() {
             </section>
 
 
-            {/* =========================
-                NAVEGACIÓN
-            ========================= */}
-
             <nav className="organizador-nav">
+
+                <a href="#organizador-inscripciones">
+
+                    <span>
+                        01
+                    </span>
+
+                    Inscripciones
+
+                </a>
 
 
                 <a href="#organizador-partidas">
 
                     <span>
-                        01
+                        02
                     </span>
 
                     Partidas
@@ -537,30 +523,75 @@ function PanelOrganizador() {
                 <a href="#organizador-resultados">
 
                     <span>
-                        02
-                    </span>
-
-                    Resultados y ranking
-
-                </a>
-
-
-                <a href="#organizador-sanciones">
-
-                    <span>
                         03
                     </span>
 
-                    Sanciones
+                    Resultados
 
                 </a>
 
             </nav>
 
 
-            {/* =========================
-                PARTIDAS
-            ========================= */}
+            <div
+                id="organizador-inscripciones"
+                className="organizador-modulo"
+            >
+
+                <div className="organizador-modulo-cabecera">
+
+                    <div>
+
+                        <span className="seccion-etiqueta">
+                            PARTICIPACIÓN
+                        </span>
+
+                        <h2>
+                            Inscripciones pendientes
+                        </h2>
+
+                        <p>
+                            Revisa y autoriza
+                            participantes antes de
+                            la competencia.
+                        </p>
+
+                    </div>
+
+
+                    <span className="organizador-contador">
+
+                        {
+                            inscripcionesPendientes
+                        }
+
+                        {" pendientes"}
+
+                    </span>
+
+                </div>
+
+
+                <GestionInscripcionesOrganizador
+                    inscripciones={
+                        inscripciones
+                    }
+                    torneos={
+                        torneos
+                    }
+                    equipos={
+                        equipos
+                    }
+                    jugadores={
+                        jugadores
+                    }
+                    onRecargar={
+                        cargarDatos
+                    }
+                />
+
+            </div>
+
 
             <div
                 id="organizador-partidas"
@@ -580,8 +611,9 @@ function PanelOrganizador() {
                         </h2>
 
                         <p>
-                            Programa enfrentamientos
-                            y controla su estado.
+                            Programa y reprograma
+                            enfrentamientos y controla
+                            su estado.
                         </p>
 
                     </div>
@@ -601,11 +633,21 @@ function PanelOrganizador() {
 
 
                 <GestionPartidasOrganizador
-                    torneos={torneos}
-                    inscripciones={inscripciones}
-                    equipos={equipos}
-                    jugadores={jugadores}
-                    partidas={partidas}
+                    torneos={
+                        torneos
+                    }
+                    inscripciones={
+                        inscripciones
+                    }
+                    equipos={
+                        equipos
+                    }
+                    jugadores={
+                        jugadores
+                    }
+                    partidas={
+                        partidas
+                    }
                     onRecargar={
                         cargarDatos
                     }
@@ -613,10 +655,6 @@ function PanelOrganizador() {
 
             </div>
 
-
-            {/* =========================
-                RESULTADOS
-            ========================= */}
 
             <div
                 id="organizador-resultados"
@@ -637,8 +675,8 @@ function PanelOrganizador() {
 
                         <p>
                             Registra resultados,
-                            valida encuentros y actualiza
-                            las posiciones.
+                            valida encuentros y
+                            actualiza las posiciones.
                         </p>
 
                     </div>
@@ -658,13 +696,27 @@ function PanelOrganizador() {
 
 
                 <GestionResultadosOrganizador
-                    partidas={partidas}
-                    resultados={resultados}
-                    torneos={torneos}
-                    inscripciones={inscripciones}
-                    equipos={equipos}
-                    jugadores={jugadores}
-                    rankings={rankings}
+                    partidas={
+                        partidas
+                    }
+                    resultados={
+                        resultados
+                    }
+                    torneos={
+                        torneos
+                    }
+                    inscripciones={
+                        inscripciones
+                    }
+                    equipos={
+                        equipos
+                    }
+                    jugadores={
+                        jugadores
+                    }
+                    rankings={
+                        rankings
+                    }
                     onRecargar={
                         cargarDatos
                     }
@@ -672,10 +724,6 @@ function PanelOrganizador() {
 
             </div>
 
-
-            {/* =========================
-                SANCIONES
-            ========================= */}
 
             <div
                 id="organizador-sanciones"
@@ -695,8 +743,9 @@ function PanelOrganizador() {
                         </h2>
 
                         <p>
-                            Administra medidas disciplinarias
-                            para jugadores y equipos.
+                            Administra medidas
+                            disciplinarias para
+                            jugadores y equipos.
                         </p>
 
                     </div>
@@ -716,9 +765,15 @@ function PanelOrganizador() {
 
 
                 <GestionSancionesOrganizador
-                    sanciones={sanciones}
-                    jugadores={jugadores}
-                    equipos={equipos}
+                    sanciones={
+                        sanciones
+                    }
+                    jugadores={
+                        jugadores
+                    }
+                    equipos={
+                        equipos
+                    }
                     onRecargar={
                         cargarDatos
                     }

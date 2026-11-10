@@ -5,6 +5,7 @@ import {
 
 import {
     crearPartida,
+    actualizarPartida,
     cambiarEstadoPartida,
     cancelarPartida
 } from "../services/organizadorService.js";
@@ -19,29 +20,58 @@ function GestionPartidasOrganizador({
     onRecargar
 }) {
 
-    const [torneoId, setTorneoId] =
-        useState("");
+    const [
+        torneoId,
+        setTorneoId
+    ] = useState("");
 
-    const [participanteAId, setParticipanteAId] =
-        useState("");
 
-    const [participanteBId, setParticipanteBId] =
-        useState("");
+    const [
+        participanteAId,
+        setParticipanteAId
+    ] = useState("");
 
-    const [ronda, setRonda] =
-        useState("");
 
-    const [fechaHora, setFechaHora] =
-        useState("");
+    const [
+        participanteBId,
+        setParticipanteBId
+    ] = useState("");
 
-    const [mensaje, setMensaje] =
-        useState("");
 
-    const [error, setError] =
-        useState("");
+    const [
+        ronda,
+        setRonda
+    ] = useState("");
 
-    const [guardando, setGuardando] =
-        useState(false);
+
+    const [
+        fechaHora,
+        setFechaHora
+    ] = useState("");
+
+
+    const [
+        partidaEditandoId,
+        setPartidaEditandoId
+    ] = useState(null);
+
+
+    const [
+        mensaje,
+        setMensaje
+    ] = useState("");
+
+
+    const [
+        error,
+        setError
+    ] = useState("");
+
+
+    const [
+        guardando,
+        setGuardando
+    ] = useState(false);
 
 
     const torneosDisponibles =
@@ -52,8 +82,10 @@ function GestionPartidasOrganizador({
                     function (torneo) {
 
                         return (
-                            torneo.estado === "ABIERTO" ||
-                            torneo.estado === "EN_CURSO"
+                            torneo.estado ===
+                                "ABIERTO" ||
+                            torneo.estado ===
+                                "EN_CURSO"
                         );
 
                     }
@@ -68,8 +100,13 @@ function GestionPartidasOrganizador({
         useMemo(
             function () {
 
-                if (torneoId === "") {
+                if (
+                    torneoId ===
+                    ""
+                ) {
+
                     return [];
+
                 }
 
 
@@ -78,9 +115,13 @@ function GestionPartidasOrganizador({
 
                         return (
                             inscripcion.torneoId ===
-                                Number(torneoId) &&
+                                Number(
+                                    torneoId
+                                ) &&
                             inscripcion.estado !==
-                                "CANCELADA"
+                                "CANCELADA" &&
+                            inscripcion.estado !==
+                                "RECHAZADA"
                         );
 
                     }
@@ -112,7 +153,11 @@ function GestionPartidasOrganizador({
 
 
         if (!inscripcion) {
-            return `Inscripción #${inscripcionId}`;
+
+            return (
+                `Inscripción #${inscripcionId}`
+            );
+
         }
 
 
@@ -160,6 +205,80 @@ function GestionPartidasOrganizador({
     }
 
 
+    function limpiarFormulario() {
+
+        setTorneoId("");
+        setParticipanteAId("");
+        setParticipanteBId("");
+        setRonda("");
+        setFechaHora("");
+        setPartidaEditandoId(
+            null
+        );
+
+    }
+
+
+    function comenzarReprogramacion(
+        partida
+    ) {
+
+        setMensaje("");
+        setError("");
+
+
+        setPartidaEditandoId(
+            partida.id
+        );
+
+
+        setTorneoId(
+            String(
+                partida.torneoId
+            )
+        );
+
+
+        setParticipanteAId(
+            String(
+                partida.participanteAId
+            )
+        );
+
+
+        setParticipanteBId(
+            String(
+                partida.participanteBId
+            )
+        );
+
+
+        setRonda(
+            partida.ronda
+        );
+
+
+        setFechaHora(
+            partida.fechaHora
+                ? partida.fechaHora.slice(
+                    0,
+                    16
+                )
+                : ""
+        );
+
+
+        window.scrollTo({
+            top:
+                0,
+
+            behavior:
+                "smooth"
+        });
+
+    }
+
+
     async function guardarPartida(
         event
     ) {
@@ -170,7 +289,10 @@ function GestionPartidasOrganizador({
         setError("");
 
 
-        if (torneoId === "") {
+        if (
+            torneoId ===
+            ""
+        ) {
 
             setError(
                 "Debes seleccionar un torneo."
@@ -181,8 +303,10 @@ function GestionPartidasOrganizador({
 
 
         if (
-            participanteAId === "" ||
-            participanteBId === ""
+            participanteAId ===
+                "" ||
+            participanteBId ===
+                ""
         ) {
 
             setError(
@@ -206,7 +330,10 @@ function GestionPartidasOrganizador({
         }
 
 
-        if (ronda.trim() === "") {
+        if (
+            ronda.trim() ===
+            ""
+        ) {
 
             setError(
                 "Debes indicar la ronda."
@@ -216,7 +343,10 @@ function GestionPartidasOrganizador({
         }
 
 
-        if (fechaHora === "") {
+        if (
+            fechaHora ===
+            ""
+        ) {
 
             setError(
                 "Debes indicar fecha y hora."
@@ -229,13 +359,19 @@ function GestionPartidasOrganizador({
         const datosPartida = {
 
             torneoId:
-                Number(torneoId),
+                Number(
+                    torneoId
+                ),
 
             participanteAId:
-                Number(participanteAId),
+                Number(
+                    participanteAId
+                ),
 
             participanteBId:
-                Number(participanteBId),
+                Number(
+                    participanteBId
+                ),
 
             ronda:
                 ronda.trim(),
@@ -245,25 +381,43 @@ function GestionPartidasOrganizador({
         };
 
 
-        setGuardando(true);
+        setGuardando(
+            true
+        );
 
 
         try {
 
-            await crearPartida(
-                datosPartida
-            );
+            if (
+                partidaEditandoId
+            ) {
+
+                await actualizarPartida(
+                    partidaEditandoId,
+                    datosPartida
+                );
 
 
-            setMensaje(
-                "Partida creada correctamente."
-            );
+                setMensaje(
+                    "Partida reprogramada correctamente."
+                );
 
 
-            setParticipanteAId("");
-            setParticipanteBId("");
-            setRonda("");
-            setFechaHora("");
+            } else {
+
+                await crearPartida(
+                    datosPartida
+                );
+
+
+                setMensaje(
+                    "Partida creada correctamente."
+                );
+
+            }
+
+
+            limpiarFormulario();
 
 
             await onRecargar();
@@ -278,7 +432,9 @@ function GestionPartidasOrganizador({
 
         } finally {
 
-            setGuardando(false);
+            setGuardando(
+                false
+            );
 
         }
     }
@@ -302,7 +458,8 @@ function GestionPartidasOrganizador({
 
 
             setMensaje(
-                nuevoEstado === "EN_CURSO"
+                nuevoEstado ===
+                    "EN_CURSO"
                     ? "Partida iniciada correctamente."
                     : "Partida finalizada correctamente."
             );
@@ -332,7 +489,9 @@ function GestionPartidasOrganizador({
 
 
         if (!confirmar) {
+
             return;
+
         }
 
 
@@ -383,6 +542,17 @@ function GestionPartidasOrganizador({
                     className="mb-4"
                 >
 
+                    <h3 className="h6 mb-3">
+
+                        {
+                            partidaEditandoId
+                                ? `Reprogramar partida #${partidaEditandoId}`
+                                : "Crear nueva partida"
+                        }
+
+                    </h3>
+
+
                     <div className="row g-3">
 
 
@@ -399,7 +569,14 @@ function GestionPartidasOrganizador({
                             <select
                                 id="partida-torneo"
                                 className="form-select"
-                                value={torneoId}
+                                value={
+                                    torneoId
+                                }
+                                disabled={
+                                    Boolean(
+                                        partidaEditandoId
+                                    )
+                                }
                                 onChange={
                                     function (event) {
 
@@ -407,8 +584,13 @@ function GestionPartidasOrganizador({
                                             event.target.value
                                         );
 
-                                        setParticipanteAId("");
-                                        setParticipanteBId("");
+                                        setParticipanteAId(
+                                            ""
+                                        );
+
+                                        setParticipanteBId(
+                                            ""
+                                        );
 
                                     }
                                 }
@@ -426,10 +608,16 @@ function GestionPartidasOrganizador({
                                             return (
 
                                                 <option
-                                                    key={torneo.id}
-                                                    value={torneo.id}
+                                                    key={
+                                                        torneo.id
+                                                    }
+                                                    value={
+                                                        torneo.id
+                                                    }
                                                 >
-                                                    {torneo.nombre}
+                                                    {
+                                                        torneo.nombre
+                                                    }
                                                 </option>
 
                                             );
@@ -456,7 +644,9 @@ function GestionPartidasOrganizador({
                             <input
                                 id="partida-ronda"
                                 className="form-control"
-                                value={ronda}
+                                value={
+                                    ronda
+                                }
                                 placeholder="Ej: SEMIFINAL"
                                 onChange={
                                     function (event) {
@@ -485,9 +675,12 @@ function GestionPartidasOrganizador({
                             <select
                                 id="participante-a"
                                 className="form-select"
-                                value={participanteAId}
+                                value={
+                                    participanteAId
+                                }
                                 disabled={
-                                    torneoId === ""
+                                    torneoId ===
+                                    ""
                                 }
                                 onChange={
                                     function (event) {
@@ -507,13 +700,19 @@ function GestionPartidasOrganizador({
 
                                 {
                                     participantes.map(
-                                        function (inscripcion) {
+                                        function (
+                                            inscripcion
+                                        ) {
 
                                             return (
 
                                                 <option
-                                                    key={inscripcion.id}
-                                                    value={inscripcion.id}
+                                                    key={
+                                                        inscripcion.id
+                                                    }
+                                                    value={
+                                                        inscripcion.id
+                                                    }
                                                 >
                                                     {
                                                         obtenerNombreParticipante(
@@ -546,9 +745,12 @@ function GestionPartidasOrganizador({
                             <select
                                 id="participante-b"
                                 className="form-select"
-                                value={participanteBId}
+                                value={
+                                    participanteBId
+                                }
                                 disabled={
-                                    torneoId === ""
+                                    torneoId ===
+                                    ""
                                 }
                                 onChange={
                                     function (event) {
@@ -569,7 +771,9 @@ function GestionPartidasOrganizador({
                                 {
                                     participantes
                                         .filter(
-                                            function (inscripcion) {
+                                            function (
+                                                inscripcion
+                                            ) {
 
                                                 return (
                                                     String(
@@ -581,13 +785,19 @@ function GestionPartidasOrganizador({
                                             }
                                         )
                                         .map(
-                                            function (inscripcion) {
+                                            function (
+                                                inscripcion
+                                            ) {
 
                                                 return (
 
                                                     <option
-                                                        key={inscripcion.id}
-                                                        value={inscripcion.id}
+                                                        key={
+                                                            inscripcion.id
+                                                        }
+                                                        value={
+                                                            inscripcion.id
+                                                        }
                                                     >
                                                         {
                                                             obtenerNombreParticipante(
@@ -621,7 +831,9 @@ function GestionPartidasOrganizador({
                                 id="partida-fecha"
                                 type="datetime-local"
                                 className="form-control"
-                                value={fechaHora}
+                                value={
+                                    fechaHora
+                                }
                                 onChange={
                                     function (event) {
 
@@ -638,24 +850,58 @@ function GestionPartidasOrganizador({
                     </div>
 
 
-                    <button
-                        type="submit"
-                        className="btn btn-primary mt-3"
-                        disabled={guardando}
-                    >
-                        {
-                            guardando
-                                ? "Creando..."
-                                : "Crear partida"
-                        }
-                    </button>
+                    <div className="d-flex gap-2 flex-wrap mt-3">
+
+                        <button
+                            type="submit"
+                            className="btn btn-primary"
+                            disabled={
+                                guardando
+                            }
+                        >
+
+                            {
+                                guardando
+                                    ? "Guardando..."
+                                    : partidaEditandoId
+                                        ? "Guardar reprogramación"
+                                        : "Crear partida"
+                            }
+
+                        </button>
+
+
+                        {partidaEditandoId && (
+
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary"
+                                onClick={
+                                    function () {
+
+                                        limpiarFormulario();
+                                        setMensaje("");
+                                        setError("");
+
+                                    }
+                                }
+                            >
+                                Cancelar edición
+                            </button>
+
+                        )}
+
+                    </div>
 
                 </form>
 
 
                 {mensaje && (
 
-                    <div className="alert alert-success">
+                    <div
+                        className="alert alert-success"
+                        role="alert"
+                    >
                         {mensaje}
                     </div>
 
@@ -664,7 +910,10 @@ function GestionPartidasOrganizador({
 
                 {error && (
 
-                    <div className="alert alert-danger">
+                    <div
+                        className="alert alert-danger"
+                        role="alert"
+                    >
                         {error}
                     </div>
 
@@ -679,14 +928,37 @@ function GestionPartidasOrganizador({
 
                             <tr>
 
-                                <th>ID</th>
-                                <th>Torneo</th>
-                                <th>Participante A</th>
-                                <th>Participante B</th>
-                                <th>Ronda</th>
-                                <th>Fecha</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
+                                <th>
+                                    ID
+                                </th>
+
+                                <th>
+                                    Torneo
+                                </th>
+
+                                <th>
+                                    Participante A
+                                </th>
+
+                                <th>
+                                    Participante B
+                                </th>
+
+                                <th>
+                                    Ronda
+                                </th>
+
+                                <th>
+                                    Fecha
+                                </th>
+
+                                <th>
+                                    Estado
+                                </th>
+
+                                <th>
+                                    Acciones
+                                </th>
 
                             </tr>
 
@@ -714,39 +986,58 @@ function GestionPartidasOrganizador({
 
                                         return (
 
-                                            <tr key={partida.id}>
+                                            <tr
+                                                key={
+                                                    partida.id
+                                                }
+                                            >
 
                                                 <td>
-                                                    {partida.id}
+                                                    {
+                                                        partida.id
+                                                    }
                                                 </td>
 
+
                                                 <td>
+
                                                     {
                                                         torneo
                                                             ? torneo.nombre
                                                             : partida.torneoId
                                                     }
+
                                                 </td>
 
+
                                                 <td>
+
                                                     {
                                                         obtenerNombreParticipante(
                                                             partida.participanteAId
                                                         )
                                                     }
+
                                                 </td>
 
+
                                                 <td>
+
                                                     {
                                                         obtenerNombreParticipante(
                                                             partida.participanteBId
                                                         )
                                                     }
+
                                                 </td>
 
+
                                                 <td>
-                                                    {partida.ronda}
+                                                    {
+                                                        partida.ronda
+                                                    }
                                                 </td>
+
 
                                                 <td>
                                                     {
@@ -754,15 +1045,43 @@ function GestionPartidasOrganizador({
                                                     }
                                                 </td>
 
+
                                                 <td>
                                                     {
                                                         partida.estado
                                                     }
                                                 </td>
 
+
                                                 <td>
 
-                                                    <div className="d-flex gap-2 flex-wrap">
+                                                    <div
+                                                        className="d-flex gap-2 flex-wrap"
+                                                    >
+
+                                                        {
+                                                            partida.estado ===
+                                                            "PROGRAMADA" && (
+
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-outline-primary btn-sm"
+                                                                    onClick={
+                                                                        function () {
+
+                                                                            comenzarReprogramacion(
+                                                                                partida
+                                                                            );
+
+                                                                        }
+                                                                    }
+                                                                >
+                                                                    Reprogramar
+                                                                </button>
+
+                                                            )
+                                                        }
+
 
                                                         {
                                                             partida.estado ===
